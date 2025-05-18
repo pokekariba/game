@@ -1,0 +1,18 @@
+@use '../config/variables' as var;
+
+html {
+  font-size: var.$default-font-size;
+  font-family: var.$font-secondary;
+}
+
+body {
+  line-height: var.$default-line-height;
+  font-weight: var.$default-font-weight;
+}
+
+h1, h2, h3, h4, h5, h6, label {
+  font-family: var.$font-primary;
+  font-weight: var.$default-font-weight;
+  line-height: var.$title-line-height;
+	margin: 0;
+}

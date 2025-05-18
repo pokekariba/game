@@ -1,0 +1,102 @@
+@forward 'reset';
+@forward 'typography';
+@use '../config/variables' as var;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  color: var.$text-color;
+  background-image: url('@/assets/img/bg-deslogado.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.d-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.d-flex {
+  display: flex;
+}
+
+// Margins
+@for $i from 0 through 5 {
+  .m-#{$i} { margin: #{$i * 0.25}rem !important; }
+  .mt-#{$i} { margin-top: #{$i * 0.25}rem !important; }
+  .mb-#{$i} { margin-bottom: #{$i * 0.25}rem !important; }
+  .ms-#{$i} { margin-left: #{$i * 0.25}rem !important; }
+  .me-#{$i} { margin-right: #{$i * 0.25}rem !important; }
+  .mx-#{$i} {
+    margin-left: #{$i * 0.25}rem !important;
+    margin-right: #{$i * 0.25}rem !important;
+  }
+  .my-#{$i} {
+    margin-top: #{$i * 0.25}rem !important;
+    margin-bottom: #{$i * 0.25}rem !important;
+  }
+}
+
+// Paddings
+@for $i from 0 through 5 {
+  .p-#{$i} { padding: #{$i * 0.25}rem !important; }
+  .pt-#{$i} { padding-top: #{$i * 0.25}rem !important; }
+  .pb-#{$i} { padding-bottom: #{$i * 0.25}rem !important; }
+  .ps-#{$i} { padding-left: #{$i * 0.25}rem !important; }
+  .pe-#{$i} { padding-right: #{$i * 0.25}rem !important; }
+  .px-#{$i} {
+    padding-left: #{$i * 0.25}rem !important;
+    padding-right: #{$i * 0.25}rem !important;
+  }
+  .py-#{$i} {
+    padding-top: #{$i * 0.25}rem !important;
+    padding-bottom: #{$i * 0.25}rem !important;
+  }
+}
+
+// Gaps
+@for $i from 0 through 5 {
+  .gap-#{$i} { gap: #{$i * 0.25}rem !important; }
+  .gap-x-#{$i} { column-gap: #{$i * 0.25}rem !important; }
+  .gap-y-#{$i} { row-gap: #{$i * 0.25}rem !important; }
+}
+
+@for $i from 1 through 5 {
+  .flex-#{$i} { flex: #{$i} !important; }
+  .flex-grow-#{$i} { flex-grow: #{$i} !important; }
+  .flex-shrink-#{$i} { flex-shrink: #{$i} !important; }
+}
+.flex-grow-0 { flex-grow: 0 !important; }
+.flex-shrink-0 { flex-shrink: 0 !important; }
+.flex-wrap { flex-wrap: wrap !important; }
+.flex-nowrap { flex-wrap: nowrap !important; }
+.flex-column { flex-direction: column !important; }
+.flex-row { flex-direction: row !important; }
+.flex-column-reverse { flex-direction: column-reverse !important; }
+.flex-row-reverse { flex-direction: row-reverse !important; }
+.justify-start { justify-content: flex-start !important; }
+.justify-end { justify-content: flex-end !important; }
+.justify-center { justify-content: center !important; }
+.justify-between { justify-content: space-between !important; }
+.justify-around { justify-content: space-around !important; }
+.justify-evenly { justify-content: space-evenly !important; }
+.align-start { align-items: flex-start !important; }
+.align-end { align-items: flex-end !important; }
+.align-center { align-items: center !important; }
+.align-baseline { align-items: baseline !important; }
+.align-stretch { align-items: stretch !important; }
+.align-self-start { align-self: flex-start !important; }
+.align-self-end { align-self: flex-end !important; }
+.align-self-center { align-self: center !important; }
+.align-self-baseline { align-self: baseline !important; }
+.align-self-stretch { align-self: stretch !important; }
