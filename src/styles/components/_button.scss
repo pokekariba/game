@@ -1,0 +1,78 @@
+@use '../config/variables' as var;
+
+.btn {
+	padding: 0.25rem 1rem;
+	text-align: center;
+	font-size: 32px;
+	border-radius: 16px;
+	cursor: pointer;
+	transition: all 0.25s ease-in-out;
+	&--{
+		&primary {
+			background-color: var.$primary-color;
+			color: var.$dark-primary-color;
+			border-color: var.$dark-primary-color;
+			&:hover {
+				background-color: var.$dark-primary-color;
+				color: var.$primary-color;
+				border-color: var.$primary-color;
+			}
+		}
+		&dark-primary {
+			background-color: var.$dark-primary-color;
+			color: var.$white;
+			border-color: var.$primary-color;
+			&:hover {
+				background-color: var.$primary-color;
+				color: var.$dark-primary-color;
+				border-color: var.$dark-primary-color;
+			}
+		}
+		&gold {
+			background-color: var.$gold;
+			color: var.$dark-cash-color;
+			border-color: var.$dark-cash-color;
+			&:hover {
+				background-color: var.$dark-cash-color;
+				color: var.$gold;
+				border-color: var.$dark-cash-color;
+			}
+		}
+		&store {
+			background-color: var.$cash-color;
+			color: var.$dark-cash-color;
+			border-color: var.$dark-cash-color;
+			&:hover {
+				background-color: var.$dark-cash-color;
+				color: var.$cash-color;
+				border-color: var.$dark-cash-color;
+			}
+		}
+		&white {
+			background-color: var.$white;
+			color: var.$text-color;
+			border-color: var.$text-color;
+			&:hover {
+				background-color: var.$gray;
+				color: var.$white;
+				border-color: var.$gray;
+			}
+		}
+		&sm {
+			font-size: var.$default-font-size;
+			padding: 0.25rem 0.5rem;
+		}
+		&lg {
+			font-size: var.$default-font-size * 1.5;
+		}
+		&md {
+			font-size: var.$default-font-size * 1.25;
+		}
+		&outline {
+			background-color: transparent !important;
+		}
+		&border {
+			border: 4px solid;
+		}
+	}	
+}
