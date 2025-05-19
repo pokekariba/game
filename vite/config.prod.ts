@@ -24,7 +24,7 @@ export default defineConfig({
         }
     },
     server: {
-        port: 8080
+        port: Number(process.env.VITE_PORT)
     },
     plugins: [ react() ]
 });

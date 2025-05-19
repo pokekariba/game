@@ -11,10 +11,12 @@ body {
   background-image: url('@/assets/img/bg-deslogado.png');
   background-size: cover;
   background-repeat: no-repeat;
+  min-height: 100vh;
 }
 
 .container {
   width: 100%;
+  min-height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
