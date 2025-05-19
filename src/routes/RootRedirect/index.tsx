@@ -8,7 +8,7 @@ const RootRedirect: React.FC = () => {
 
   useEffect(() => {
     if (token) {
-      navigate('/game', { replace: true });
+      navigate('/pokariba', { replace: true });
     } else {
       navigate('/login', { replace: true });
     }
