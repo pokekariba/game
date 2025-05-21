@@ -32,6 +32,21 @@ body {
   display: flex;
 }
 
+.align-center{
+  text-align: center;
+  margin: auto 0;
+}
+
+a{
+  color: var.$dark-primary-color;
+}
+
+
+
+// Font sizes
+@for $i from 1 through 5 {
+  .fs-#{$i} { font-size: #{16px + ($i - 1) * 4px} !important; }
+}
 // Margins
 @for $i from 0 through 5 {
   .m-#{$i} { margin: #{$i * 0.25}rem !important; }

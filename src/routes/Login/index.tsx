@@ -3,7 +3,7 @@ import Card from '../../components/Card';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { authService } from '../../services/auth.service';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
   const [usuario, setUsuario] = React.useState('');
@@ -38,6 +38,12 @@ const Login: React.FC = () => {
         href='/register'>
           Criar uma conta
         </Button>
+        <Link 
+          className='align-center fs-3'
+          
+          to='/forgot-password'>
+          Esqueci minha senha
+        </Link>
 
       </Card>
     </div>
