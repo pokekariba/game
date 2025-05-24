@@ -1,0 +1,38 @@
+.logo{
+   width: 230px;
+   height: auto;
+}
+
+
+.store__btn__container{
+    width: 200px;
+}
+
+.store__header{
+    background-image: url(../../assets/img/headerdecks.svg);
+}
+
+.store__btn__select{
+    background-color: #720220;
+    border: 3px solid #490114;
+    color: white;
+    padding: 0.05rem 3.5rem;
+	text-align: center;
+	border-radius: 16px;
+	cursor: pointer;
+	text-decoration: none;
+	transition: all 0.25s ease-in-out;
+}
+
+.store__card__thumb {
+    width: 160px;
+    height: 220px;
+    position: relative;
+    @for $i from 1 through 3 {
+    :nth-child(#{$i}) {
+      width: 160px;
+      position: absolute;
+      top: #{($i - 1) * 20}px;
+    }
+  }
+}

@@ -14,7 +14,6 @@ const ForgotPassword: React.FC = () => {
 
   const handleEsqueciSenha = async () => {
     if (!usuario || !email) {
-      alert('Preencha todos os campos');
       return;
     }
 
