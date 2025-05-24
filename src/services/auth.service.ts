@@ -1,4 +1,11 @@
-import { RequestLogin, ResponseLogin, ResquestRegister } from "../@types/AuthServicesTypes";
+import { RequestLogin, 
+  ResponseLogin, 
+  ResquestRegister,  
+  EsqueciSenhaRequest,
+  EsqueciSenhaResponse,
+  ResetPasswordRequest,
+  ResetPasswordResponse
+ } from "../@types/AuthServicesTypes";
 import api from "../api/axios"
 import { useAuthStore } from "../store/useAuthStore";
 import { useGameStore } from "../store/useGameStore";
@@ -24,5 +31,15 @@ export const authService = {
         }
         return false;
     },
-    
-}
+    esqueciSenha: async (req: EsqueciSenhaRequest): Promise<EsqueciSenhaResponse> => {
+    const response = await api.post<EsqueciSenhaResponse>(
+      '/esqueci-senha',
+      req
+    );
+    return response.data;
+  },
+  resetPassword: async (req: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
+    const response = await api.post<ResetPasswordResponse>('/reset-password', req);
+    return response.data;
+  }
+};
