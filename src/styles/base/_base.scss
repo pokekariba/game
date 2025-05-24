@@ -32,7 +32,7 @@ body {
   display: flex;
 }
 
-.align-center{
+.align-center-content {
   text-align: center;
   margin: auto 0;
 }
@@ -44,7 +44,7 @@ a{
 
 
 // Font sizes
-@for $i from 1 through 5 {
+@for $i from 1 through 8 {
   .fs-#{$i} { font-size: #{16px + ($i - 1) * 4px} !important; }
 }
 // Margins

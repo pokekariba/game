@@ -41,5 +41,10 @@ export const authService = {
   resetPassword: async (req: ResetPasswordRequest): Promise<ResetPasswordResponse> => {
     const response = await api.post<ResetPasswordResponse>('/reset-password', req);
     return response.data;
+  },
+  logout: () => {
+    useAuthStore.getState().logout();
+    useGameStore.getState().setUsuario(undefined);
+    window.location.href = '/login';
   }
 };
