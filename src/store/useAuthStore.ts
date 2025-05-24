@@ -1,4 +1,3 @@
-// src/store/useAuthStore.ts
 import { create } from 'zustand';
 
 type AuthState = {
@@ -8,13 +7,13 @@ type AuthState = {
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
-  token: localStorage.getItem('token'),
+  token: sessionStorage.getItem('token'),
   setToken: (token) => {
-    localStorage.setItem('token', token);
+    sessionStorage.setItem('token', token);
     set({ token });
   },
 	logout: () => {
-    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
     set({ token: null });
   }
 }));
