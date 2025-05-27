@@ -22,8 +22,8 @@ const InfoUser: React.FC = () => {
           <h2>Criação da conta: </h2>
           
           <div>
-            <Button onClick={() => navigate('/login')}>
-              Desconectar
+            <Button onClick={() => navigate('/main-menu')}>
+              Voltar ao menu principal
           </Button>
           </div>
         </Card>
