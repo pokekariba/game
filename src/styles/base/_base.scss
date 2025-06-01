@@ -42,6 +42,10 @@ a {
   color: var.$dark-primary-color;
 }
 
+.text-center {
+  text-align: center;
+}
+
 // Font sizes
 @for $i from 1 through 8 {
   .fs-#{$i} {

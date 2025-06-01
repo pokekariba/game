@@ -1,33 +1,40 @@
 import React from 'react';
 import Button from '../../components/Button';
 import Card from '../../components/Card';
-import { useNavigate } from 'react-router-dom';
-import SideBar from '../SideBar';
+import { useGameStore } from '../../store/useGameStore';
+import { authService } from '../../services/auth.service';
 
 const InfoUser: React.FC = () => {
-  const navigate = useNavigate();
+  const usuario = useGameStore((state) => state.usuario);
 
   return (
-    <div>
-      <div style={{ position: 'absolute', left: 0, top: 0, width: '250px', height: '100vh' }}>
-        <SideBar />
-      </div>
-
-      <div className='d-center container' style={{ marginLeft: '250px' }}>
-        <Card haveLogo className="d-flex gap-2 flex-column">
-          <h1 style={{ fontWeight: "bold", fontSize: "2rem", textAlign: "center" }}>Dados do usuário</h1>
-          <h2>Nome do usuário: </h2>
-          <h2>Email do usuário: </h2>
-          <h2>Senha: </h2>
-          <h2>Criação da conta: </h2>
-          
-          <div>
-            <Button onClick={() => navigate('/main-menu')}>
-              Voltar ao menu principal
-          </Button>
-          </div>
-        </Card>
-      </div>
+    <div className="d-center container">
+      <Card haveLogo className="d-flex gap-1 flex-column">
+        <h1 className="text-center fs-3 mb-2">Dados do usuário</h1>
+        <div className="d-flex flex-row justify-between">
+          <p>Nome do usuário: </p>
+          <p>{usuario?.nome}</p>
+        </div>
+        <div className="d-flex flex-row justify-between">
+          <p>Email do usuário: </p>
+          <p>{usuario?.nome}</p>
+        </div>
+        <div className="d-flex flex-row justify-between">
+          <p>Partidas ganhas: </p>
+          <p>{usuario?.partidasGanhas}</p>
+        </div>
+        <div className="d-flex flex-row justify-between">
+          <p>Partidas jogadas: </p>
+          <p>{usuario?.partidasTotais}</p>
+        </div>
+        <div className="d-flex flex-row justify-between">
+          <p>Criação da conta: </p>
+          <p>{usuario?.dataCriacao}</p>
+        </div>
+        <Button color="error" outline onClick={authService.logout}>
+          Desconectar
+        </Button>
+      </Card>
     </div>
   );
 };
