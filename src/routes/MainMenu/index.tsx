@@ -14,7 +14,7 @@ const MainMenu: React.FC = () => {
         <Button color="white" href="/pokariba/store/deck">
           Loja
         </Button>
-        <Button color="white" href="/pokariba/user">
+        <Button color="white" href="/pokariba/help">
           Regras
         </Button>
       </div>
