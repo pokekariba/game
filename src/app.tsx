@@ -18,36 +18,41 @@ import AvatarStore from './routes/Store/routes/AvatarStore';
 import LobbyList from './routes/LobbyList';
 import Lobby from './routes/Lobby';
 import Game from './routes/Game';
-
+import CreateLobby from './routes/CreateLobby';
+import { GlobalLoading } from './components/GlobalLoading';
 
 const App: React.FC = () => (
+  <>
+    <GlobalLoading />
     <Router>
       <Routes>
-        <Route path="/" element={< RootRedirect/>} />
-				<Route path="/login" element={<Login/>} />
-				<Route path="/register" element={<Register/>} />
-				<Route path="/forgot-password" element={<ForgotPassword/>} />
-				<Route path='/reset-password/:token' element={<ResetPassword/>} />
-				<Route path="/pokariba" element={<RequireAuth/>}>
-					<Route element={<SideBar/>}>
-						<Route index element={<MainMenu/>} />
-						<Route path='store' element={<Store />}>
-							<Route path='deck' element={<DeckStore />} />
-							<Route path='background' element={<BackgroundStore />} />
-							<Route path='avatar' element={<AvatarStore />} />
-						</Route>
-						<Route path='user' element={<InfoUser />} />
-						<Route path='help' element={<Help />} />
-					</Route>
-					<Route path="game" element={<Game />}>
-						<Route path="lobby-list" element={<LobbyList />} />
-						<Route path="lobby" element={<Lobby />} />
-						<Route path="play" element={<PhaserCanvas />} />
-					</Route>
-				</Route>
-      	<Route path="*" element={<RootRedirect/>} />
+        <Route path="/" element={<RootRedirect />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
+        <Route path="/pokariba" element={<RequireAuth />}>
+          <Route element={<SideBar />}>
+            <Route index element={<MainMenu />} />
+            <Route path="store" element={<Store />}>
+              <Route path="deck" element={<DeckStore />} />
+              <Route path="background" element={<BackgroundStore />} />
+              <Route path="avatar" element={<AvatarStore />} />
+            </Route>
+            <Route path="user" element={<InfoUser />} />
+            <Route path="help" element={<Help />} />
+          </Route>
+          <Route path="game" element={<Game />}>
+            <Route path="lobby-list" element={<LobbyList />} />
+            <Route path="create-lobby" element={<CreateLobby />} />
+            <Route path="lobby" element={<Lobby />} />
+            <Route path="play" element={<PhaserCanvas />} />
+          </Route>
+        </Route>
+        <Route path="*" element={<RootRedirect />} />
       </Routes>
     </Router>
+  </>
 );
 
 export default App;

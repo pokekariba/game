@@ -1,7 +1,6 @@
 import React from 'react';
 import Card from '../../components/Card';
 import '../../styles/styles.scss';
-import SideBar from '../SideBar';
 import tabuleiroImg from '../../assets/svg/tabuleiro-explicacao.svg';
 
 const Help: React.FC = () => {

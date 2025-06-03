@@ -17,7 +17,7 @@ const InfoUser: React.FC = () => {
         </div>
         <div className="d-flex flex-row justify-between">
           <p>Email do usuário: </p>
-          <p>{usuario?.nome}</p>
+          <p>{usuario?.email}</p>
         </div>
         <div className="d-flex flex-row justify-between">
           <p>Partidas ganhas: </p>

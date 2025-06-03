@@ -1,35 +1,44 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 import { Usuario } from '../@types/Usuario';
+import { Partida, PartidaSelecionada } from '../@types/Partida';
+import DadosPartida from '../@types/DadosPartida';
+import Jogador from '../@types/Jogadores';
+import Resultado from '../@types/Resultado';
 
 interface GameState {
   usuario?: Usuario;
-  isGameOver: boolean;
+  listaPartidas?: Partida[];
+  dadosPartida?: DadosPartida;
+  partidaSelecionada?: PartidaSelecionada;
+  resultado?: Resultado;
   setUsuario: (usuario?: Usuario) => void;
-  setGameOver: (isGameOver: boolean) => void;
+  setListaPartidas: (listaPartidas?: Partida[]) => void;
+  setDadosPartida: (dadosPartida?: DadosPartida) => void;
+  selecionarPartida: (partida?: PartidaSelecionada) => void;
+  setResultado: (resultado?: Resultado) => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
   usuario: undefined,
-  isGameOver: false,
+  listaPartidas: undefined,
+  dadosPartida: undefined,
+  partidaSelecionada: undefined,
   setUsuario: (usuario) => {
     set({ usuario });
-    if (usuario) {
-      sessionStorage.setItem('usuario', JSON.stringify(usuario));
-    } else {
-      sessionStorage.removeItem('usuario');
-    }
+    usuario
+      ? sessionStorage.setItem('usuario', JSON.stringify(usuario))
+      : sessionStorage.removeItem('usuario');
   },
-  setGameOver: (isGameOver) => {
-    set({ isGameOver });
-    sessionStorage.setItem('isGameOver', JSON.stringify(isGameOver));
-  },
+  setListaPartidas: (listaPartidas) => set({ listaPartidas }),
+  setDadosPartida: (dadosPartida) => set({ dadosPartida }),
+  selecionarPartida: (partidaSelecionada) => set({ partidaSelecionada }),
+  setResultado: (resultado) => set({ resultado }),
 }));
 
 const usuarioStr = sessionStorage.getItem('usuario');
-const isGameOverStr = sessionStorage.getItem('isGameOver');
-if (usuarioStr || isGameOverStr) {
+
+if (usuarioStr) {
   useGameStore.setState({
     usuario: usuarioStr ? JSON.parse(usuarioStr) : undefined,
-    isGameOver: isGameOverStr ? JSON.parse(isGameOverStr) : false,
   });
 }

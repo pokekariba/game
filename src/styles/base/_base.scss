@@ -20,7 +20,7 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-  min-height: 100vh;
+  height: 100vh;
 }
 
 .d-center {
@@ -77,6 +77,51 @@ a {
     margin-top: #{$i * 0.25}rem !important;
     margin-bottom: #{$i * 0.25}rem !important;
   }
+}
+
+.text-primary {
+  color: var.$primary-color !important;
+}
+.text-secondary {
+  color: var.$secondary-color !important;
+}
+.text-cash {
+  color: var.$cash-color !important;
+}
+.text-text {
+  color: var.$text-color !important;
+}
+.text-light-text {
+  color: var.$light-text-color !important;
+}
+.text-white {
+  color: var.$white !important;
+}
+.text-gray {
+  color: var.$gray !important;
+}
+.text-light-gray {
+  color: var.$light-gray !important;
+}
+.text-gold {
+  color: var.$gold !important;
+}
+.text-success {
+  color: var.$sucess !important;
+}
+.text-danger,
+.text-error {
+  color: var.$error !important;
+}
+.text-warning {
+  color: var.$warning !important;
+}
+.text-muted {
+  color: var.$light-gray !important;
+}
+
+.text-border {
+  text-shadow: 2px 1px 1px #000000;
 }
 
 // Paddings
