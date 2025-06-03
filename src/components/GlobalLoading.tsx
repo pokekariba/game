@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLoadingStore } from '../store/useLoading';
-import Loading from '../assets/img/loading.gif';
+import Loading from '../assets/img/loading.webp';
 
 export const GlobalLoading: React.FC = () => {
   const loading = useLoadingStore((s) => s.loading);

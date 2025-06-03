@@ -1,6 +1,6 @@
 import React from 'react';
 import Button from '../../components/Button';
-import logo from '../../assets/img/logo-pokariba.png';
+import logo from '../../assets/img/logo-pokariba.webp';
 
 const MainMenu: React.FC = () => {
   return (
