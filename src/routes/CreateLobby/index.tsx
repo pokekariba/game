@@ -3,29 +3,30 @@ import Card from '../../components/Card';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { emitirEvento } from '../../services/partida.service';
-import { SocketClientEventsEnum } from '../../@types/PartidaServiceTypes';
-import { useGameStore } from '../../store/useGameStore';
+import {
+  SocketClientEventsEnum,
+  SocketServerEventsEnum,
+} from '../../@types/PartidaServiceTypes';
 import { useNavigate } from 'react-router-dom';
 
 const CreateLobby: React.FC = () => {
   const [nomePartida, setNomePartida] = React.useState('');
   const [senhaPartida, setSenhaPartida] = React.useState('');
-  const partidaSelecionada = useGameStore((e) => e.partidaSelecionada);
   const navigate = useNavigate();
 
-  const criarSala = () => {
+  const criarSala = async () => {
     if (!nomePartida) return;
-    emitirEvento(SocketClientEventsEnum.CRIAR_PARTIDA, {
-      nome: nomePartida,
-      senha: senhaPartida,
-    });
+    await emitirEvento(
+      SocketClientEventsEnum.CRIAR_PARTIDA,
+      SocketServerEventsEnum.SALA_ATUALIZADA,
+      true,
+      {
+        nome: nomePartida,
+        senha: senhaPartida,
+      },
+    );
+    navigate('../lobby');
   };
-
-  React.useEffect(() => {
-    if (partidaSelecionada) {
-      navigate('../lobby');
-    }
-  }, [partidaSelecionada]);
 
   return (
     <div className="d-center flex-column container">

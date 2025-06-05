@@ -17,6 +17,7 @@ export enum SocketServerEventsEnum {
   RODADA_CALCULADA = 'rodada_calculada',
   FINAL_PARTIDA = 'final_partida',
   SALA_ATUALIZADA = 'sala_atualizada',
+  TOKEN_RENOVADO = 'token_renovado',
 }
 
 export interface SocketServerEventsData {
@@ -29,6 +30,7 @@ export interface SocketServerEventsData {
     donoPartida: boolean;
     jogadores: Jogador[];
   };
+  [SocketServerEventsEnum.TOKEN_RENOVADO]: string;
 }
 
 export interface SocketClientEventsData {

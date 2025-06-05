@@ -3,7 +3,10 @@ import Card from '../../components/Card';
 import Button from '../../components/Button';
 import { useGameStore } from '../../store/useGameStore';
 import { emitirEvento } from '../../services/partida.service';
-import { SocketClientEventsEnum } from '../../@types/PartidaServiceTypes';
+import {
+  SocketClientEventsEnum,
+  SocketServerEventsEnum,
+} from '../../@types/PartidaServiceTypes';
 import Lock from '../../assets/svg/icons/lock.svg?react';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../components/Modal';
@@ -18,19 +21,24 @@ const LobbyList: React.FC = () => {
 
   const entrarSala = (idPartida: number, temSenha: boolean) => {
     if (!temSenha) {
-      emitirEvento(SocketClientEventsEnum.ENTRAR_PARTIDA, { idPartida });
+      SocketClientEventsEnum.ENTRAR_PARTIDA, { idPartida };
       return navigate('../lobby');
     }
     setSenhaModal(true);
     setPartidaId(idPartida);
   };
 
-  const entraSalaSenha = () => {
+  const entraSalaSenha = async () => {
     if (!partidaId) return;
-    emitirEvento(SocketClientEventsEnum.ENTRAR_PARTIDA, {
-      idPartida: partidaId,
-      senha,
-    });
+    await emitirEvento(
+      SocketClientEventsEnum.ENTRAR_PARTIDA,
+      SocketServerEventsEnum.SALA_ATUALIZADA,
+      true,
+      {
+        idPartida: partidaId,
+        senha,
+      },
+    );
     return navigate('../lobby');
   };
 

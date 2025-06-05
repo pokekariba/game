@@ -11,7 +11,7 @@ const Game: React.FC = () => {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    conectarSocket();
+    // conectarSocket();
     return desconectarSocket;
   }, []);
 

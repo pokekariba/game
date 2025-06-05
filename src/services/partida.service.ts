@@ -7,12 +7,13 @@ import {
 import { useAuthStore } from '../store/useAuthStore';
 import env from '../config/env';
 import { useGameStore } from '../store/useGameStore';
+import { useLoadingStore } from '../store/useLoading';
 
 let socket: Socket<ServerEvents, ClientEvents> | null = null;
 
 export const conectarSocket = () => {
-  if (socket && socket.connected) return;
-
+  if (socket) desconectarSocket();
+  adicionarLoading();
   const token = useAuthStore.getState().token;
 
   socket = io(env.SERVER_URL, {
@@ -23,6 +24,7 @@ export const conectarSocket = () => {
 
   socket.on('connect', () => {
     console.log('[Socket] Conectado:', socket?.id);
+    removerLoading();
   });
 
   socket.on('disconnect', (reason) => {
@@ -31,6 +33,10 @@ export const conectarSocket = () => {
 
   socket.on('connect_error', (err) => {
     console.error('[Socket] Erro de conexão:', err.message);
+  });
+
+  socket.on(SocketServerEventsEnum.TOKEN_RENOVADO, (token) => {
+    useAuthStore.getState().setToken(token);
   });
 
   socket.on(SocketServerEventsEnum.LISTAR_PARTIDAS, (data) => {
@@ -50,11 +56,52 @@ export const conectarSocket = () => {
   });
 };
 
-export const emitirEvento = <Event extends keyof ClientEvents>(
+export const emitirEvento = async <Event extends keyof ClientEvents>(
   event: Event,
-  ...args: Parameters<ClientEvents[Event]>
-) => {
-  socket?.emit(event, ...args);
+  responseEvent: SocketServerEventsEnum | null,
+  loadingUntil: boolean,
+  ...data: Parameters<ClientEvents[Event]>
+): Promise<void> => {
+  if (!socket) throw new Error('Socket não conectado');
+
+  if (loadingUntil) adicionarLoading();
+
+  try {
+    socket.emit(event, ...data);
+    if (responseEvent) {
+      await esperarPelaResposta(responseEvent);
+    }
+  } finally {
+    if (loadingUntil) removerLoading();
+  }
+};
+
+const adicionarLoading = (): void => {
+  useLoadingStore.getState().increment();
+};
+
+const removerLoading = (): void => {
+  useLoadingStore.getState().decrement();
+};
+
+const esperarPelaResposta = (
+  responseEvent: SocketServerEventsEnum,
+  timeoutMs = 10000,
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const onResponse = () => {
+      clearTimeout(timeout);
+      socket?.off(responseEvent, onResponse);
+      resolve();
+    };
+
+    const timeout = setTimeout(() => {
+      socket?.off(responseEvent, onResponse);
+      reject(new Error(`Timeout esperando evento ${responseEvent}`));
+    }, timeoutMs);
+
+    socket!.on(responseEvent, onResponse);
+  });
 };
 
 export const estaConectado = () => {
@@ -62,6 +109,9 @@ export const estaConectado = () => {
 };
 
 export const desconectarSocket = () => {
-  socket?.disconnect();
-  socket = null;
+  if (socket) {
+    socket.removeAllListeners();
+    socket.disconnect();
+    socket = null;
+  }
 };

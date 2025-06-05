@@ -5,18 +5,20 @@ import { Preloader } from './scenes/Preloader';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
-  width: 1920,
-  height: 1080,
+  width: window.innerWidth,
+  height: window.innerHeight,
+  transparent: true,
+  disableContextMenu: true,
+  fps: { target: 60 },
+  dom: { createContainer: true },
   scale: {
-    mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  parent: 'game-container',
-  backgroundColor: '#028af8',
   scene: [Boot, Preloader, Battle],
 };
 
-const StartGame = (parent: string) => {
+const StartGame = (parent: HTMLElement) => {
   return new Game({ ...config, parent });
 };
 

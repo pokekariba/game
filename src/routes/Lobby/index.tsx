@@ -5,26 +5,39 @@ import ash from '../../assets/img/ash.png';
 import { useGameStore } from '../../store/useGameStore';
 import { useNavigate } from 'react-router-dom';
 import { emitirEvento } from '../../services/partida.service';
-import { SocketClientEventsEnum } from '../../@types/PartidaServiceTypes';
+import {
+  SocketClientEventsEnum,
+  SocketServerEventsEnum,
+} from '../../@types/PartidaServiceTypes';
 
 const Lobby: React.FC = () => {
   const navigate = useNavigate();
   const partida = useGameStore((state) => state.partidaSelecionada);
 
-  const sairPartida = () => {
+  const sairPartida = async () => {
     if (partida) {
-      emitirEvento(SocketClientEventsEnum.SAIR_PARTIDA, {
-        idPartida: partida.id,
-      });
+      await emitirEvento(
+        SocketClientEventsEnum.SAIR_PARTIDA,
+        SocketServerEventsEnum.LISTAR_PARTIDAS,
+        true,
+        {
+          idPartida: partida.id,
+        },
+      );
+      navigate('../lobby-list');
     }
-    navigate('../lobby-list');
   };
 
-  const iniciarpartida = () => {
+  const iniciarPartida = async () => {
     if (!partida) return;
-    emitirEvento(SocketClientEventsEnum.INICIAR_PARTIDA, {
-      idPartida: partida.id,
-    });
+    await emitirEvento(
+      SocketClientEventsEnum.INICIAR_PARTIDA,
+      SocketServerEventsEnum.RODADA_CALCULADA,
+      true,
+      {
+        idPartida: partida.id,
+      },
+    );
     navigate('../play');
   };
 
@@ -52,7 +65,7 @@ const Lobby: React.FC = () => {
           ))}
         </ul>
         {partida?.donoPartida && (
-          <Button className="mt-5" onClick={iniciarpartida}>
+          <Button className="mt-5" onClick={iniciarPartida}>
             Iniciar Batalha
           </Button>
         )}
