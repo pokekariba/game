@@ -1,4 +1,3 @@
-import { Boot } from './scenes/Boot';
 import { Battle } from './scenes/Battle';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
@@ -15,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [Boot, Preloader, Battle],
+  scene: [Preloader, Battle],
 };
 
 const StartGame = (parent: HTMLElement) => {

@@ -1,18 +1,28 @@
 import { Scene } from 'phaser';
+import { useGameStore } from '../../store/useGameStore';
+import { SkinPatida } from '../../@types/SkinPartida';
 
 export class Preloader extends Scene {
   constructor() {
     super('Preloader');
   }
 
-  init() {
-    this.add.image(512, 384, 'background');
-    this.add.rectangle(512, 384, 468, 32).setStrokeStyle(1, 0xffffff);
-    const bar = this.add.rectangle(512 - 230, 384, 4, 28, 0xffffff);
-
-    this.load.on('progress', (progress: number) => {
-      bar.width = 4 + 460 * progress;
+  async init () {
+    const skins = await new Promise<SkinPatida>((resolve,reject) => {
+      const checkSkins = setInterval(() => {
+        const skinStore = useGameStore.getState().skinPartida;
+        if (skinStore) {
+          checkSkins.close();
+          resolve(skinStore);
+        }
+      },500);
+      setTimeout(() => {
+        checkSkins.close();
+        reject();
+      },5000)
     });
+
+
   }
 
   preload() {
