@@ -8,6 +8,9 @@ const MainMenu: React.FC = () => {
       <img src={logo} alt="Logo" className="mainmenu__logo" />
 
       <div className="d-flex gap-3 mainmenu__buttons">
+        <Button color="white" href="/pokariba/game/play">
+          GAMEDEV
+        </Button>
         <Button color="white" href="/pokariba/game/lobby-list">
           Jogar
         </Button>

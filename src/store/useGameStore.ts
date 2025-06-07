@@ -5,7 +5,7 @@ import DadosPartida from '../@types/DadosPartida';
 import Resultado from '../@types/Resultado';
 import { SkinPatida } from '../@types/SkinPartida';
 
-interface GameState {
+export interface GameState {
   usuario?: Usuario;
   listaPartidas?: Partida[];
   dadosPartida?: DadosPartida;
@@ -26,31 +26,31 @@ export const useGameStore = create<GameState>((set) => ({
   dadosPartida: undefined,
   partidaSelecionada: undefined,
   skinPartida: {
-    avatarAdversario: 'assets/ash.png',
-    avatarUsuario: 'assets/ash.png',
-    fundo: 'assets/bg.png',
-    cartasAdversario:[
-      'assets/mock-cartas/ditto.webp',
-      'assets/mock-cartas/bulbasauro.webp',
-      'assets/mock-cartas/charmander.webp',
-      'assets/mock-cartas/squirtle.webp',
-      'assets/mock-cartas/pikachu.webp',
-      'assets/mock-cartas/magnemite.webp',
-      'assets/mock-cartas/machop.webp',
-      'assets/mock-cartas/abra.webp',
-      'assets/mock-cartas/koffin.webp',
+    avatarAdversario: '/assets/ash.png',
+    avatarUsuario: '/assets/ash.png',
+    fundo: '/assets/bg.png',
+    cartasAdversario: [
+      '/assets/mock-cartas/ditto.webp',
+      '/assets/mock-cartas/magnemite.webp',
+      '/assets/mock-cartas/machop.webp',
+      '/assets/mock-cartas/abra.webp',
+      '/assets/mock-cartas/koffin.webp',
+      '/assets/mock-cartas/bulbasauro.webp',
+      '/assets/mock-cartas/charmander.webp',
+      '/assets/mock-cartas/squirtle.webp',
+      '/assets/mock-cartas/pikachu.webp',
     ],
     cartasUsuario: [
-      'assets/mock-cartas/ditto.webp',
-      'assets/mock-cartas/bulbasauro.webp',
-      'assets/mock-cartas/charmander.webp',
-      'assets/mock-cartas/squirtle.webp',
-      'assets/mock-cartas/pikachu.webp',
-      'assets/mock-cartas/magnemite.webp',
-      'assets/mock-cartas/machop.webp',
-      'assets/mock-cartas/abra.webp',
-      'assets/mock-cartas/koffin.webp',
-    ]
+      '/assets/mock-cartas/ditto.webp',
+      '/assets/mock-cartas/magnemite.webp',
+      '/assets/mock-cartas/machop.webp',
+      '/assets/mock-cartas/abra.webp',
+      '/assets/mock-cartas/koffin.webp',
+      '/assets/mock-cartas/bulbasauro.webp',
+      '/assets/mock-cartas/charmander.webp',
+      '/assets/mock-cartas/squirtle.webp',
+      '/assets/mock-cartas/pikachu.webp',
+    ],
   },
   resultado: undefined,
   setUsuario: (usuario) => {

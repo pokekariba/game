@@ -1,15 +1,15 @@
-import { Carta } from './Carta';
+import { DadosCarta } from './Carta';
 
 export default interface DadosPartida {
   rodada: number;
-  tabuleiro: Carta[][];
-  jogadaAdversario?: Carta[];
+  tabuleiro: DadosCarta[][];
+  jogadaAdversario?: DadosCarta[];
   pontuacaoJogador: number;
   pontuacaoAdversario: number;
   cartasCapturadas: number[];
   cartasCapturadasAdversario: number[];
   baralho: number;
-  maoJogador: Carta[];
+  maoJogador: DadosCarta[];
   maoAdversario: number;
   suaVez: boolean;
 }

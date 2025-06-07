@@ -1,4 +1,4 @@
-export interface Carta {
+export interface DadosCarta {
   id: number;
   partida_id: number;
   jogador_partida_id?: number;
@@ -8,8 +8,8 @@ export interface Carta {
 }
 
 export enum TipoCarta {
-  mao,
-  mesa,
-  baralho,
-  capturado,
+  mao = 'mao',
+  mesa = 'mesa',
+  baralho = 'baralho',
+  capturado = 'capturado',
 }

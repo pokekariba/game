@@ -1,6 +1,7 @@
 import { Battle } from './scenes/Battle';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
+import RexWebFontLoaderPlugin from 'phaser3-rex-plugins/plugins/webfontloader-plugin.js';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: AUTO,
@@ -13,6 +14,15 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  plugins: {
+    global: [
+      {
+        key: 'rexWebFontLoader',
+        plugin: RexWebFontLoaderPlugin,
+        start: true,
+      },
+    ],
   },
   scene: [Preloader, Battle],
 };
