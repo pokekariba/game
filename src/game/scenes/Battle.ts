@@ -90,7 +90,7 @@ export class Battle extends Scene {
         posicao: 4,
         jogador_partida_id: 1,
         tipo: TipoCarta.mao,
-        valor: 5,
+        valor: 0,
       },
     ];
 

@@ -11,10 +11,6 @@ export class Tabuleiro {
   private cartasTabuleiro: Carta[][] = [];
   private posicoesSetoresBase: { x: number; y: number; rotation: number }[] =
     [];
-  private raioTabuleiro = 0;
-  private centroX = 0;
-  private centroY = 0;
-
   private readonly TOP_SPACING_PERCENT = 0.025; // 5% de espaçamento no topo
   private readonly HEIGHT_PERCENT = 0.9; // 90% da altura da tela
   private readonly HEIGHT_OFFSET_PX = 140; // -140px de altura final
@@ -27,8 +23,6 @@ export class Tabuleiro {
 
   constructor(scene: Battle, tipoTabuleiro: TipoTabuleiro) {
     this.scene = scene;
-    this.centroX = this.scene.scale.width / 2;
-    this.centroY = this.scene.scale.height / 2;
     this.imagemTabuleiro = this.scene.add.image(0, 0, tipoTabuleiro);
     this.imagemTabuleiro.setOrigin(0.5);
     this.imagemTabuleiro.setDepth(this.PROFUNDIDADE_TABULEIRO);
@@ -67,25 +61,26 @@ export class Tabuleiro {
 
     this.imagemTabuleiro.setPosition(boardX, boardY);
 
-    this.raioTabuleiro = this.imagemTabuleiro.displayHeight / 2;
-    this.raioTabuleiro *= 0.75;
     this.calcularPosicoesSetoresBase();
     this.atualizarLayoutTodosSetores(false);
   }
 
   private calcularPosicoesSetoresBase() {
     this.posicoesSetoresBase = [];
-    const anguloPorSetor = -360 / this.NUMERO_SETORES; // Em graus
+    const centroX = this.imagemTabuleiro.x;
+    const centroY = this.imagemTabuleiro.y;
+    const raioQuadrado = (this.imagemTabuleiro.displayHeight / 2) * 0.65;
 
-    for (let i = 0; i < this.NUMERO_SETORES; i++) {
-      const anguloSetor = 45 + i * anguloPorSetor;
-      const anguloRad = Phaser.Math.DegToRad(anguloSetor);
+    for (let i = 0; i < this.NUMERO_SETORES * 2; i++) {
+      if (i % 2 === 0) continue;
+      const anguloSetor = Phaser.Math.DegToRad(
+        90 + (-360 / (this.NUMERO_SETORES * 2)) * i,
+      );
 
-      const x = this.centroX + this.raioTabuleiro * Math.cos(anguloRad);
-      const y = this.centroY + this.raioTabuleiro * Math.sin(anguloRad);
-      const rotation = anguloRad + Phaser.Math.DegToRad(90);
+      const x = centroX + Math.cos(anguloSetor) * raioQuadrado;
+      const y = centroY + Math.sin(anguloSetor) * raioQuadrado;
 
-      this.posicoesSetoresBase.push({ x, y, rotation });
+      this.posicoesSetoresBase.push({ x, y, rotation: anguloSetor });
     }
   }
 
@@ -100,8 +95,6 @@ export class Tabuleiro {
       const localOffsetX = this.OFFSET_PILHA_X * index;
       const localOffsetY = this.OFFSET_PILHA_Y * index;
 
-      // 2. Rotacione esses offsets pelo ângulo de rotação do setor
-      // Use o seno e cosseno do ângulo de rotação do setor para isso.
       const rotatedOffsetX =
         localOffsetX * Math.cos(basePos.rotation) -
         localOffsetY * Math.sin(basePos.rotation);
@@ -109,10 +102,10 @@ export class Tabuleiro {
         localOffsetX * Math.sin(basePos.rotation) +
         localOffsetY * Math.cos(basePos.rotation);
 
-      // 3. Aplique os offsets rotacionados à posição base do setor
       const targetX = basePos.x + rotatedOffsetX;
       const targetY = basePos.y + rotatedOffsetY;
-      const targetRotation = basePos.rotation; // Todas as cartas na pilha têm a mesma rotação do setor
+
+      const targetRotation = basePos.rotation + Phaser.Math.DegToRad(-90); // Todas as cartas na pilha têm a mesma rotação do setor
 
       const targetDepth =
         this.PROFUNDIDADE_TABULEIRO + index * this.PROFUNDIDADE_POR_CARTA;
@@ -125,7 +118,7 @@ export class Tabuleiro {
           rotation: targetRotation,
           scaleX: this.ESCALA_CARTA,
           scaleY: this.ESCALA_CARTA,
-          duration: 200,
+          duration: 250,
           ease: 'Power2',
           onComplete: () => {
             carta.setProfundidade(targetDepth);
