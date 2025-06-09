@@ -13,7 +13,7 @@ const Game: React.FC = () => {
   const [botaoVoltar, setBotaoVoltar] = useState(false);
 
   React.useEffect(() => {
-    // conectarSocket();
+    conectarSocket();
     return desconectarSocket;
   }, []);
 

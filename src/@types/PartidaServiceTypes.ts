@@ -27,7 +27,7 @@ export interface SocketServerEventsData {
   [SocketServerEventsEnum.RODADA_CALCULADA]: DadosPartida;
   [SocketServerEventsEnum.FINAL_PARTIDA]: Resultado;
   [SocketServerEventsEnum.SALA_ATUALIZADA]: Partida & {
-    donoPartida: boolean;
+    donoPartida: string;
     jogadores: Jogador[];
   };
   [SocketServerEventsEnum.TOKEN_RENOVADO]: string;

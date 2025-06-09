@@ -44,6 +44,12 @@ export const conectarSocket = () => {
   });
 
   socket.on(SocketServerEventsEnum.SALA_ATUALIZADA, (data) => {
+    if (data.jogadores.length > 1) {
+      const adversario = data.jogadores.find(
+        (jogador) => jogador.nome !== useGameStore.getState().usuario?.nome,
+      );
+      useGameStore.getState().setAdversario(adversario);
+    }
     useGameStore.getState().selecionarPartida(data);
   });
 

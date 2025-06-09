@@ -10,7 +10,7 @@ export default defineConfig({
   plugins: [
     svgr({
       svgrOptions: {
-        exportType: 'default', // <-- ESSA é a nova forma correta
+        exportType: 'default',
       },
     }),
     react(),
