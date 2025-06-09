@@ -13,6 +13,7 @@ import {
 const Lobby: React.FC = () => {
   const navigate = useNavigate();
   const partida = useGameStore((state) => state.partidaSelecionada);
+  const dadosPartida = useGameStore((state) => state.dadosPartida);
 
   const sairPartida = async () => {
     if (partida) {
@@ -38,8 +39,14 @@ const Lobby: React.FC = () => {
         idPartida: partida.id,
       },
     );
-    navigate('../play');
   };
+  
+  React.useEffect(() => {
+    if (dadosPartida) {
+      navigate('../play');
+    }
+
+  },[dadosPartida])
 
   return (
     <div className="d-center flex-column container">
