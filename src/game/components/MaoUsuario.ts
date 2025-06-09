@@ -8,7 +8,6 @@ export class MaoUsuario {
   private cartasNaMaoId: number[] = [];
   private posicoesMaoBase: Phaser.Geom.Point[] = [];
 
-  // --- Constantes de Layout e Animação de Hover ---
   private readonly OFFSET_ALTURA_PX = 100;
   private readonly ESPACAMENTO_CARTA_PX_NORMAL = 80;
   private readonly HOVER_SCALE_FACTOR = 1.2;
@@ -122,12 +121,18 @@ export class MaoUsuario {
       .map((carta) => {
         if (this.cartasNaMaoId.includes(carta.id))
           return this.cartasNaMao[carta.posicao];
-        const pos = this.posicoesMaoBase[carta.posicao];
         this.cartasNaMaoId[carta.posicao] = carta.id;
-        return new Carta(this.cena, pos.x, pos.y, carta, true);
+        const widthCarta = this.cartasNaMao[0].displayWidth;
+        return new Carta(
+          this.cena,
+          -widthCarta,
+          this.cena.scale.height / 2,
+          carta,
+          true,
+        );
       });
 
-    this.atualizarLayoutMao(false);
+    this.atualizarLayoutMao();
   }
 
   public removerCarta(cartaId: number): Carta | null {

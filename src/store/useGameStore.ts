@@ -4,6 +4,8 @@ import { Partida, PartidaSelecionada } from '../@types/Partida';
 import DadosPartida from '../@types/DadosPartida';
 import Resultado from '../@types/Resultado';
 import { SkinPatida } from '../@types/SkinPartida';
+import { TipoCarta } from '../@types/Carta';
+import Jogador from '../@types/Jogadores';
 
 export interface GameState {
   usuario?: Usuario;
@@ -12,6 +14,8 @@ export interface GameState {
   skinPartida?: SkinPatida;
   partidaSelecionada?: PartidaSelecionada;
   resultado?: Resultado;
+  adversario: Jogador;
+  setAdversario: (jogador?: Jogador) => void;
   setUsuario: (usuario?: Usuario) => void;
   setListaPartidas: (listaPartidas?: Partida[]) => void;
   setDadosPartida: (dadosPartida?: DadosPartida) => void;
@@ -23,7 +27,59 @@ export interface GameState {
 export const useGameStore = create<GameState>((set) => ({
   usuario: undefined,
   listaPartidas: undefined,
-  dadosPartida: undefined,
+  dadosPartida: {
+    baralho: 66,
+    cartasCapturadas: Array(9).fill(0),
+    cartasCapturadasAdversario: Array(9).fill(0),
+    maoAdversario: 5,
+    maoJogador: [
+      {
+        id: 1,
+        partida_id: 1,
+        posicao: 0,
+        jogador_partida_id: 1,
+        tipo: TipoCarta.mao,
+        valor: 1,
+      },
+      {
+        id: 2,
+        partida_id: 2,
+        posicao: 1,
+        jogador_partida_id: 1,
+        tipo: TipoCarta.mao,
+        valor: 2,
+      },
+      {
+        id: 3,
+        partida_id: 3,
+        posicao: 2,
+        jogador_partida_id: 1,
+        tipo: TipoCarta.mao,
+        valor: 3,
+      },
+      {
+        id: 4,
+        partida_id: 4,
+        posicao: 3,
+        jogador_partida_id: 1,
+        tipo: TipoCarta.mao,
+        valor: 4,
+      },
+      {
+        id: 5,
+        partida_id: 5,
+        posicao: 4,
+        jogador_partida_id: 1,
+        tipo: TipoCarta.mao,
+        valor: 0,
+      },
+    ],
+    pontuacaoJogador: 0,
+    pontuacaoAdversario: 0,
+    rodada: 1,
+    suaVez: true,
+    tabuleiro: [],
+  },
   partidaSelecionada: undefined,
   skinPartida: {
     avatarAdversario: '/assets/ash.png',
@@ -53,6 +109,13 @@ export const useGameStore = create<GameState>((set) => ({
     ],
   },
   resultado: undefined,
+  adversario: {
+    avatar_ativo: 1,
+    nome: 'seidi',
+    partidas_ganhas: 0,
+    partidas_totais: 0,
+  },
+  setAdversario: (adversario) => set({ adversario }),
   setUsuario: (usuario) => {
     set({ usuario });
     usuario

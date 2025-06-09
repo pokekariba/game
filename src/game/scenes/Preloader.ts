@@ -34,18 +34,6 @@ export class Preloader extends Scene {
     console.log('Preloader preload');
     this.load.image('tabuleiro', '/assets/tabuleiro.webp');
     this.load.image('tabuleiro-extend', '/assets/tabuleiro-extend.webp');
-    this.load.image('verso', '/assets/verso.webp');
-
-    // Icones de tipo - usar caminho absoluto direto
-    this.load.image('tipo0', '/assets/tipos/normal.webp');
-    this.load.image('tipo1', '/assets/tipos/metal.webp');
-    this.load.image('tipo2', '/assets/tipos/lutador.webp');
-    this.load.image('tipo3', '/assets/tipos/psiquico.webp');
-    this.load.image('tipo4', '/assets/tipos/sombrio.webp');
-    this.load.image('tipo5', '/assets/tipos/grama.webp');
-    this.load.image('tipo6', '/assets/tipos/agua.webp');
-    this.load.image('tipo7', '/assets/tipos/fogo.webp');
-    this.load.image('tipo8', '/assets/tipos/eletrico.webp');
 
     this.load.rexWebFont({
       google: {
@@ -63,8 +51,6 @@ export class Preloader extends Scene {
 
     console.log('skins no create', this.skins);
 
-    this.load.image('avatarUsuario', this.skins.avatarUsuario);
-    this.load.image('avatarAdversario', this.skins.avatarAdversario);
     this.load.image('fundo', this.skins.fundo);
 
     this.skins.cartasUsuario.forEach((carta, index) => {

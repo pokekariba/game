@@ -4,24 +4,22 @@ import { Tabuleiro } from '../components/Tabuleiro';
 import { TipoTabuleiro } from '../../@types/game/TipoTabuleiroEnum';
 import { MaoUsuario } from '../components/MaoUsuario';
 import DadosPartida from '../../@types/DadosPartida';
-import { DadosCarta, TipoCarta } from '../../@types/Carta';
 import { Carta } from '../components/Carta';
-import { TiposPorIndice } from '../../@types/game/TiposJogo';
-import { Placar } from '../components/Placar';
-import { CartasRestantesUI } from '../../@types/game/UIElements';
-import { PlacarJogador } from '../components/PlacarJogador';
+import { emitirEvento } from '../../services/partida.service';
+import {
+  SocketClientEventsData,
+  SocketClientEventsEnum,
+} from '../../@types/PartidaServiceTypes';
 
 export class Battle extends Scene {
   private fundo: GameObjects.Image;
   private tabuleiro: Tabuleiro;
   private maoUsuario: MaoUsuario;
   private dadosPatida: DadosPartida;
-  private placarUsuario: Placar;
-  private placarAdversario: Placar;
-  private avatarUsuario: PlacarJogador;
-  private avatarAdversario: PlacarJogador;
   private debugGraphics: Phaser.GameObjects.Graphics;
-  private cartasRestantesUI: CartasRestantesUI;
+  private cartasRodada: Carta[] = [];
+  private valorCartaRodada: number = 0;
+  private suaVez = false;
 
   private dadosPatidaObservable: () => void;
 
@@ -31,9 +29,22 @@ export class Battle extends Scene {
 
   public init() {
     this.dadosPatida = useGameStore.getState().dadosPartida!;
-    this.dadosPatidaObservable = useGameStore.subscribe((gameState) => {
+    this.suaVez = this.dadosPatida.suaVez;
+    this.emitirSuaVez();
+    this.dadosPatidaObservable = useGameStore.subscribe(async (gameState) => {
       if (gameState.dadosPartida) {
+        const dadosPartidaAntigos: DadosPartida = JSON.parse(
+          JSON.stringify(this.dadosPatida),
+        );
+        const novaRodada =
+          this.dadosPatida.rodada !== gameState.dadosPartida.rodada;
         this.dadosPatida = gameState.dadosPartida;
+
+        if (novaRodada) {
+          await this.montarJogada(dadosPartidaAntigos);
+          this.suaVez = gameState.dadosPartida.suaVez;
+          this.emitirSuaVez();
+        }
       }
     });
   }
@@ -51,143 +62,21 @@ export class Battle extends Scene {
 
     this.tabuleiro = new Tabuleiro(this, TipoTabuleiro.TABULEIRO);
 
-    const mockMao: DadosCarta[] = [
-      {
-        id: 1,
-        partida_id: 1,
-        posicao: 0,
-        jogador_partida_id: 1,
-        tipo: TipoCarta.mao,
-        valor: 1,
-      },
-      {
-        id: 2,
-        partida_id: 2,
-        posicao: 1,
-        jogador_partida_id: 1,
-        tipo: TipoCarta.mao,
-        valor: 2,
-      },
-      {
-        id: 3,
-        partida_id: 3,
-        posicao: 2,
-        jogador_partida_id: 1,
-        tipo: TipoCarta.mao,
-        valor: 3,
-      },
-      {
-        id: 4,
-        partida_id: 4,
-        posicao: 3,
-        jogador_partida_id: 1,
-        tipo: TipoCarta.mao,
-        valor: 4,
-      },
-      {
-        id: 5,
-        partida_id: 5,
-        posicao: 4,
-        jogador_partida_id: 1,
-        tipo: TipoCarta.mao,
-        valor: 0,
-      },
-    ];
-
-    this.maoUsuario = new MaoUsuario(this, mockMao);
-
-    const numerosIniciaisPlacar = new Array(TiposPorIndice.length).fill(0);
-
-    this.placarUsuario = new Placar(this, 40, 120, numerosIniciaisPlacar);
-    this.placarAdversario = new Placar(
-      this,
-      this.scale.width - 100,
-      260,
-      numerosIniciaisPlacar,
+    window.addEventListener(
+      'trocar_tabuleiro',
+      this.trocarTipoTabuleiro.bind(this),
     );
 
-    const xPos = this.scale.width / 2 - 360;
-    const yPos = 80;
-    const valorInicialCartas = 66;
-
-    const texto = this.add
-      .text(xPos, yPos, `Cartas Restantes: ${valorInicialCartas}`, {
-        fontFamily: '"Jersey 10"',
-        fontSize: '24px',
-        color: '#000000',
-      })
-      .setOrigin(1, 0.55)
-      .setDepth(200);
-
-    const fundo = this.add.graphics();
-    fundo.setDepth(199);
-
-    this.cartasRestantesUI = {
-      texto: texto,
-      fundo: fundo,
-      valor: valorInicialCartas,
-    };
-
-    this.desenharCartasRestantesFundo();
-
-    this.avatarUsuario = new PlacarJogador(
-      this,
-      120,
-      this.scale.height - 100,
-      'avatarUsuario',
-      'Jogador 1',
-      0,
-      false,
+    window.addEventListener(
+      'finalizar_rodada',
+      this.finalizarRodada.bind(this),
     );
-    this.avatarAdversario = new PlacarJogador(
-      this,
-      this.scale.width - 120,
-      100,
-      'avatarAdversario',
-      'Jogador 2',
-      0,
-      true,
-    );
+
+    this.maoUsuario = new MaoUsuario(this, this.dadosPatida.maoJogador);
 
     this.events.on('carta_clicada', this.aoClicarNaCarta.bind(this));
-  }
 
-  private desenharCartasRestantesFundo(): void {
-    this.cartasRestantesUI.fundo.clear();
-
-    const larguraTexto = this.cartasRestantesUI.texto.width;
-    const alturaTexto = this.cartasRestantesUI.texto.height;
-
-    const paddingX = 25;
-    const paddingY = 15;
-    const raioBorda = 20;
-    const corFundo = 0xffffff;
-    const corBorda = 0xff8c00;
-    const espessuraBorda = 3;
-
-    const larguraFundo = larguraTexto + 2 * paddingX;
-    const alturaFundo = alturaTexto + 2 * paddingY;
-
-    const xFundo = this.cartasRestantesUI.texto.x - larguraFundo + paddingX;
-    const yFundo = this.cartasRestantesUI.texto.y - alturaFundo / 2;
-
-    this.cartasRestantesUI.fundo.lineStyle(espessuraBorda, corBorda, 1);
-    this.cartasRestantesUI.fundo.strokeRoundedRect(
-      xFundo,
-      yFundo,
-      larguraFundo,
-      alturaFundo,
-      raioBorda,
-    );
-
-    this.cartasRestantesUI.fundo.fillStyle(corFundo, 1);
-    this.cartasRestantesUI.fundo.fillRoundedRect(
-      xFundo,
-      yFundo,
-      larguraFundo,
-      alturaFundo,
-      raioBorda,
-    );
+    this.events.on('carta_coringa_jogada', this.aoJogarCoringa.bind(this));
   }
 
   public shutdown() {
@@ -201,17 +90,103 @@ export class Battle extends Scene {
     this.scale.off(Phaser.Scale.Events.RESIZE, this.redimencionarFundo, this);
   }
 
-  private aoClicarNaCarta(carta: Carta) {
+  private trocarTipoTabuleiro(event: Event) {
+    const novoTipoTabuleiro: TipoTabuleiro = (event as CustomEvent).detail;
+    this.tabuleiro.trocarImagem(novoTipoTabuleiro);
+  }
+
+  private finalizarRodada() {
+    const idCartas = this.cartasRodada.map((carta) => carta.getDadosCarta().id);
+    const idPartida = this.cartasRodada[0].getDadosCarta().partida_id;
+    const jogada: SocketClientEventsData[SocketClientEventsEnum.JOGADA] = {
+      idCartas,
+      idPartida,
+      valorCamaleao: this.valorCartaRodada,
+    };
+    emitirEvento(SocketClientEventsEnum.JOGADA, null, false, jogada);
+    this.suaVez = false;
+    this.emitirSuaVez();
+    this.cartasRodada = [];
+    this.valorCartaRodada = 0;
+  }
+
+  private aoJogarCoringa(valorCoringa: number) {
+    if (!this.valorCartaRodada) {
+      this.valorCartaRodada = valorCoringa;
+    }
+  }
+
+  private async aoClicarNaCarta(carta: Carta) {
     const dados = carta.getDadosCarta();
-    console.log(
-      `[Battle] Evento 'carta_clicada' recebido para carta: ${dados.valor} : ${dados.posicao} : ${dados.tipo}`,
-    );
+    if (!this.suaVez) return;
+    if (this.cartasRodada.length) {
+      if (dados.valor !== this.valorCartaRodada && dados.valor) return;
+    } else {
+      this.valorCartaRodada = dados.valor;
+    }
+    this.cartasRodada.push(carta);
     if (this.maoUsuario.obterCartas().includes(carta)) {
       const cartaRemovida = this.maoUsuario.removerCarta(dados.id);
       if (cartaRemovida) {
-        this.tabuleiro.jogarCarta(carta);
+        await this.tabuleiro.jogarCarta(carta, this.valorCartaRodada);
       }
     }
+  }
+
+  private async montarJogada(dadosPartidaAntigos: DadosPartida) {
+    const tabuleiroAtual = this.tabuleiro.getCartasTabuleiro();
+    const tabuleiroCalculado = this.dadosPatida.tabuleiro;
+    const maoJogador = this.maoUsuario.obterCartas();
+
+    for (const [index, setor] of tabuleiroCalculado.entries()) {
+      const setorAtual = tabuleiroAtual[index];
+      if (!setorAtual.length || setor.length) continue;
+      const cartasRemovidas = this.tabuleiro.removerTodasCartasDoSetor(index);
+      let yAnimacao = -cartasRemovidas[0].displayHeight;
+      if (
+        dadosPartidaAntigos.cartasCapturadas[index] <
+        this.dadosPatida.cartasCapturadas[index]
+      ) {
+        yAnimacao = this.scale.height + cartasRemovidas[0].displayHeight;
+      }
+
+      for (const carta of cartasRemovidas) {
+        await new Promise<void>((resolve) => {
+          this.tweens.add({
+            targets: carta,
+            y: yAnimacao,
+            rotation: 0,
+            duration: 250,
+            ease: 'Power2',
+            onComplete: () => {
+              carta.destroy();
+              resolve();
+            },
+          });
+        });
+      }
+    }
+    if (this.dadosPatida.jogadaAdversario) {
+      const tamanhoCarta = maoJogador[0].displayHeight;
+      for (const carta of this.dadosPatida.jogadaAdversario) {
+        const objCarta = new Carta(
+          this,
+          this.scale.width / 2,
+          -tamanhoCarta,
+          carta,
+          false,
+        );
+        await this.tabuleiro.jogarCarta(objCarta);
+      }
+    }
+    this.maoUsuario.atualizarCartas(this.dadosPatida.maoJogador);
+  }
+
+  private emitirSuaVez() {
+    const event = new CustomEvent('sua_vez', {
+      detail: this.suaVez,
+    });
+    window.dispatchEvent(event);
   }
 
   private redimencionarFundo() {
