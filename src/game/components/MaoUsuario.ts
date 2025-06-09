@@ -122,7 +122,9 @@ export class MaoUsuario {
         if (this.cartasNaMaoId.includes(carta.id))
           return this.cartasNaMao[carta.posicao];
         this.cartasNaMaoId[carta.posicao] = carta.id;
-        const widthCarta = this.cartasNaMao[0].displayWidth;
+        const widthCarta = this.cartasNaMao[0]
+          ? this.cartasNaMao[0].displayWidth
+          : this.cena.scale.width / 2;
         return new Carta(
           this.cena,
           -widthCarta,

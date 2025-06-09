@@ -19,9 +19,14 @@ const LobbyList: React.FC = () => {
   const [senha, setSenha] = React.useState('');
   const [partidaId, setPartidaId] = React.useState<number | undefined>();
 
-  const entrarSala = (idPartida: number, temSenha: boolean) => {
+  const entrarSala = async (idPartida: number, temSenha: boolean) => {
     if (!temSenha) {
-      SocketClientEventsEnum.ENTRAR_PARTIDA, { idPartida };
+      await emitirEvento(
+        SocketClientEventsEnum.ENTRAR_PARTIDA,
+        SocketServerEventsEnum.SALA_ATUALIZADA,
+        true,
+        { idPartida },
+      );
       return navigate('../lobby');
     }
     setSenhaModal(true);

@@ -28,10 +28,13 @@ export class Battle extends Scene {
   }
 
   public init() {
+    console.log('Battle init: ', useGameStore.getState());
+
     this.dadosPatida = useGameStore.getState().dadosPartida!;
     this.suaVez = this.dadosPatida.suaVez;
     this.emitirSuaVez();
     this.dadosPatidaObservable = useGameStore.subscribe(async (gameState) => {
+      console.log('Observable: ', gameState);
       if (gameState.dadosPartida) {
         const dadosPartidaAntigos: DadosPartida = JSON.parse(
           JSON.stringify(this.dadosPatida),
@@ -138,6 +141,23 @@ export class Battle extends Scene {
     const tabuleiroCalculado = this.dadosPatida.tabuleiro;
     const maoJogador = this.maoUsuario.obterCartas();
 
+    if (this.dadosPatida.jogadaAdversario) {
+      const tamanhoCarta = maoJogador[0].displayHeight;
+      for (const carta of this.dadosPatida.jogadaAdversario) {
+        const objCarta = new Carta(
+          this,
+          this.scale.width / 2,
+          -tamanhoCarta,
+          carta,
+          false,
+        );
+        await this.tabuleiro.jogarCarta(
+          objCarta,
+          this.dadosPatida.valorLogadaAdversario,
+        );
+      }
+    }
+
     for (const [index, setor] of tabuleiroCalculado.entries()) {
       const setorAtual = tabuleiroAtual[index];
       if (!setorAtual.length || setor.length) continue;
@@ -166,19 +186,7 @@ export class Battle extends Scene {
         });
       }
     }
-    if (this.dadosPatida.jogadaAdversario) {
-      const tamanhoCarta = maoJogador[0].displayHeight;
-      for (const carta of this.dadosPatida.jogadaAdversario) {
-        const objCarta = new Carta(
-          this,
-          this.scale.width / 2,
-          -tamanhoCarta,
-          carta,
-          false,
-        );
-        await this.tabuleiro.jogarCarta(objCarta);
-      }
-    }
+
     this.maoUsuario.atualizarCartas(this.dadosPatida.maoJogador);
   }
 

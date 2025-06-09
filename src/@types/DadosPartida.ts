@@ -4,6 +4,7 @@ export default interface DadosPartida {
   rodada: number;
   tabuleiro: DadosCarta[][];
   jogadaAdversario?: DadosCarta[];
+  valorLogadaAdversario?: number;
   pontuacaoJogador: number;
   pontuacaoAdversario: number;
   cartasCapturadas: number[];
