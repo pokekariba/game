@@ -1,14 +1,14 @@
 import React from 'react';
-import Card from '../../components/Card';
-import Button from '../../components/Button';
-import ash from '../../assets/img/ash.png';
-import { useGameStore } from '../../store/useGameStore';
+import ash from '../../../../assets/img/ash.png';
 import { useNavigate } from 'react-router-dom';
-import { emitirEvento } from '../../services/partida.service';
 import {
   SocketClientEventsEnum,
   SocketServerEventsEnum,
-} from '../../@types/PartidaServiceTypes';
+} from '../../../../@types/PartidaServiceTypes';
+import Button from '../../../../components/Button';
+import Card from '../../../../components/Card';
+import { emitirEvento } from '../../../../services/partida.service';
+import { useGameStore } from '../../../../store/useGameStore';
 
 const Lobby: React.FC = () => {
   const navigate = useNavigate();
@@ -40,13 +40,12 @@ const Lobby: React.FC = () => {
       },
     );
   };
-  
+
   React.useEffect(() => {
     if (dadosPartida) {
       navigate('../play');
     }
-
-  },[dadosPartida])
+  }, [dadosPartida]);
 
   return (
     <div className="d-center flex-column container">

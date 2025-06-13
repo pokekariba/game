@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import ArrowLeft from '../../assets/svg/icons/arrow-left.svg?react';
 import Button from '../../components/Button';
@@ -10,26 +10,33 @@ import {
 const Game: React.FC = () => {
   const navigate = useNavigate();
   const loc = useLocation();
-  const [botaoVoltar, setBotaoVoltar] = useState(false);
+  const [botaoVoltar, setBotaoVoltar] = React.useState(false);
 
   React.useEffect(() => {
     conectarSocket();
-    return desconectarSocket;
+    return voltarHome;
   }, []);
 
   React.useEffect(() => {
     setBotaoVoltar(!loc.pathname.includes('play'));
   }, [loc.pathname]);
 
-  const voltarHome = () => {
+  const voltarHome = (navegar?: boolean) => {
     desconectarSocket();
-    navigate('/pokariba');
+
+    if (navegar) {
+      navigate('/pokariba');
+    }
   };
 
   return (
     <>
       {botaoVoltar && (
-        <Button iconButton className="game__icon" onClick={voltarHome}>
+        <Button
+          iconButton
+          className="game__icon"
+          onClick={() => voltarHome(true)}
+        >
           <ArrowLeft />
         </Button>
       )}

@@ -1,6 +1,7 @@
 export default interface Resultado {
   vencedor: string;
-  pontuacao: Map<string, number>;
+  pontuacao: [string, number][];
+  pontuacaoMap: Map<string, number>;
   motivo: MotivoFinal;
 }
 

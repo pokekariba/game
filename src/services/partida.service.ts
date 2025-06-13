@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import env from '../config/env';
 import { useGameStore } from '../store/useGameStore';
 import { useLoadingStore } from '../store/useLoading';
+import { useModal } from '../store/useModal';
 
 let socket: Socket<ServerEvents, ClientEvents> | null = null;
 
@@ -32,7 +33,16 @@ export const conectarSocket = () => {
   });
 
   socket.on('connect_error', (err) => {
-    console.error('[Socket] Erro de conexão:', err.message);
+    const modalsState = useModal.getState();
+    modalsState.setModalContent(err.message);
+    useLoadingStore.getState().setLoading(false);
+    modalsState.setModal(true);
+    const modalObserver = useModal.subscribe((modal) => {
+      if (!modal.modal) {
+        window.location.href = '/pokariba';
+        modalObserver();
+      }
+    });
   });
 
   socket.on(SocketServerEventsEnum.TOKEN_RENOVADO, (token) => {
@@ -41,6 +51,13 @@ export const conectarSocket = () => {
 
   socket.on(SocketServerEventsEnum.LISTAR_PARTIDAS, (data) => {
     useGameStore.getState().setListaPartidas(data.partidas);
+  });
+
+  socket.on(SocketServerEventsEnum.ERRO_PARTIDA, (data) => {
+    const modalsState = useModal.getState();
+    modalsState.setModalContent(data.message);
+    useLoadingStore.getState().setLoading(false);
+    modalsState.setModal(true);
   });
 
   socket.on(SocketServerEventsEnum.SALA_ATUALIZADA, (data) => {
@@ -58,7 +75,9 @@ export const conectarSocket = () => {
   });
 
   socket.on(SocketServerEventsEnum.FINAL_PARTIDA, (data) => {
-    useGameStore.getState().setResultado(data);
+    useGameStore
+      .getState()
+      .setResultado({ ...data, pontuacaoMap: new Map(data.pontuacao) });
   });
 };
 

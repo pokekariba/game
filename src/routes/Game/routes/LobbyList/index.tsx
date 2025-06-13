@@ -1,16 +1,16 @@
 import React from 'react';
-import Card from '../../components/Card';
-import Button from '../../components/Button';
-import { useGameStore } from '../../store/useGameStore';
-import { emitirEvento } from '../../services/partida.service';
+import Card from '../../../../components/Card';
+import Button from '../../../../components/Button';
+import { useGameStore } from '../../../../store/useGameStore';
+import { emitirEvento } from '../../../../services/partida.service';
 import {
   SocketClientEventsEnum,
   SocketServerEventsEnum,
-} from '../../@types/PartidaServiceTypes';
-import Lock from '../../assets/svg/icons/lock.svg?react';
+} from '../../../../@types/PartidaServiceTypes';
+import Lock from '../../../../assets/svg/icons/lock.svg?react';
 import { useNavigate } from 'react-router-dom';
-import Modal from '../../components/Modal';
-import Input from '../../components/Input';
+import Modal from '../../../../components/Modal';
+import Input from '../../../../components/Input';
 
 const LobbyList: React.FC = () => {
   const navigate = useNavigate();

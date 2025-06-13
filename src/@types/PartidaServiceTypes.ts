@@ -18,11 +18,16 @@ export enum SocketServerEventsEnum {
   FINAL_PARTIDA = 'final_partida',
   SALA_ATUALIZADA = 'sala_atualizada',
   TOKEN_RENOVADO = 'token_renovado',
+  ERRO_PARTIDA = 'erro_partida',
 }
 
 export interface SocketServerEventsData {
   [SocketServerEventsEnum.LISTAR_PARTIDAS]: {
     partidas: Partida[];
+  };
+  [SocketServerEventsEnum.ERRO_PARTIDA]: {
+    message: string;
+    status: number;
   };
   [SocketServerEventsEnum.RODADA_CALCULADA]: DadosPartida;
   [SocketServerEventsEnum.FINAL_PARTIDA]: Resultado;

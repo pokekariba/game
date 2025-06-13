@@ -19,7 +19,7 @@ export class Battle extends Scene {
   private debugGraphics: Phaser.GameObjects.Graphics;
   private cartasRodada: Carta[] = [];
   private valorCartaRodada: number = 0;
-  private suaVez = false;
+  private suaVez?: boolean = undefined;
 
   private dadosPatidaObservable: () => void;
 
@@ -88,8 +88,16 @@ export class Battle extends Scene {
       this.tabuleiro.destroy();
     }
     if (this.maoUsuario) {
-      this.maoUsuario.destruir();
+      this.maoUsuario.destroy();
     }
+    window.removeEventListener(
+      'trocar_tabuleiro',
+      this.trocarTipoTabuleiro.bind(this),
+    );
+    window.removeEventListener(
+      'finalizar_rodada',
+      this.finalizarRodada.bind(this),
+    );
     this.scale.off(Phaser.Scale.Events.RESIZE, this.redimencionarFundo, this);
   }
 
@@ -99,15 +107,17 @@ export class Battle extends Scene {
   }
 
   private finalizarRodada() {
-    const idCartas = this.cartasRodada.map((carta) => carta.getDadosCarta().id);
-    const idPartida = this.cartasRodada[0].getDadosCarta().partida_id;
+    const idCartas = this.cartasRodada[0]
+      ? this.cartasRodada.map((carta) => carta.getDadosCarta().id)
+      : [];
+    const idPartida = useGameStore.getState().partidaSelecionada?.id || 0;
     const jogada: SocketClientEventsData[SocketClientEventsEnum.JOGADA] = {
       idCartas,
       idPartida,
       valorCamaleao: this.valorCartaRodada,
     };
     emitirEvento(SocketClientEventsEnum.JOGADA, null, false, jogada);
-    this.suaVez = false;
+    this.suaVez = undefined;
     this.emitirSuaVez();
     this.cartasRodada = [];
     this.valorCartaRodada = 0;
@@ -142,7 +152,9 @@ export class Battle extends Scene {
     const maoJogador = this.maoUsuario.obterCartas();
 
     if (this.dadosPatida.jogadaAdversario) {
-      const tamanhoCarta = maoJogador[0].displayHeight;
+      const tamanhoCarta = maoJogador[0]
+        ? maoJogador[0].displayHeight
+        : this.scale.height / 2;
       for (const carta of this.dadosPatida.jogadaAdversario) {
         const objCarta = new Carta(
           this,
@@ -176,7 +188,7 @@ export class Battle extends Scene {
             targets: carta,
             y: yAnimacao,
             rotation: 0,
-            duration: 250,
+            duration: 500,
             ease: 'Power2',
             onComplete: () => {
               carta.destroy();

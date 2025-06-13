@@ -27,6 +27,7 @@ export interface GameState {
   ) => void;
   setResultado: (resultado?: Resultado) => void;
   setSkinPartida: (skinPartida?: SkinPatida) => void;
+  zerarPartida: () => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
@@ -84,6 +85,15 @@ export const useGameStore = create<GameState>((set) => ({
     }),
   setResultado: (resultado) => set({ resultado }),
   setSkinPartida: (skinPartida) => set({ skinPartida }),
+  zerarPartida: () =>
+    set({
+      resultado: undefined,
+      //skinPartida: undefined,
+      dadosPartida: undefined,
+      partidaSelecionada: undefined,
+      adversario: undefined,
+      listaPartidas: undefined,
+    }),
 }));
 
 const usuarioStr = sessionStorage.getItem('usuario');

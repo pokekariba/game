@@ -2,6 +2,7 @@ import axios from 'axios';
 import env from '../config/env';
 import { useAuthStore } from '../store/useAuthStore';
 import { useLoadingStore } from '../store/useLoading';
+import { useModal } from '../store/useModal';
 
 const api = axios.create({
   baseURL: env.SERVER_URL,
@@ -35,6 +36,7 @@ api.interceptors.request.use(
   },
   (error) => {
     useLoadingStore.getState().decrement();
+    abrirModal(error?.message);
     return Promise.reject(error);
   },
 );
@@ -46,8 +48,14 @@ api.interceptors.response.use(
   },
   (error) => {
     useLoadingStore.getState().decrement();
+    abrirModal(error?.message);
     return Promise.reject(error);
   },
 );
+
+const abrirModal = (error: string) => {
+  useModal.getState().setModalContent(error);
+  useModal.getState().setModal(true);
+};
 
 export default api;

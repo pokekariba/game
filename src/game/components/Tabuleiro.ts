@@ -22,6 +22,7 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
   private readonly OFFSET_PILHA_Y = -5;
   private readonly OFFSET_PILHA_X = 15;
   private readonly ESCALA_CARTA = 0.3;
+  private readonly VOLTA_EM_RAD = 2 * Math.PI;
 
   private modoSelecaoCoringaAtivo: boolean = false;
   private cartaCoringaEmEspera: Carta | null = null;
@@ -165,7 +166,12 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
       const targetXGlobal = globalPoint.x;
       const targetYGlobal = globalPoint.y;
 
-      const targetRotation = basePos.rotation + Phaser.Math.DegToRad(-90);
+      let targetRotation = basePos.rotation + Phaser.Math.DegToRad(-90);
+
+      while (targetRotation > this.VOLTA_EM_RAD) {
+        targetRotation -= this.VOLTA_EM_RAD;
+      }
+      console.log('targetRotation', targetRotation);
 
       const targetDepth =
         this.PROFUNDIDADE_TABULEIRO + index * this.PROFUNDIDADE_POR_CARTA;
@@ -183,6 +189,7 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
             ease: 'Power2',
             onComplete: () => {
               carta.setProfundidade(targetDepth);
+              this.scene.tweens.killAll();
               resolve();
             },
           });
