@@ -15,6 +15,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   border?: boolean;
   size?: 'sm' | 'md' | 'lg';
   href?: string;
+  iconButton?: boolean;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -25,19 +26,20 @@ const Button: React.FC<ButtonProps> = ({
   size = 'md',
   className,
   href,
+  iconButton = false,
   ...props
 }) =>
   href ? (
     <Link
       to={href}
-      className={`btn btn--${color} btn--${size} ${border && 'btn--border'} ${outline && 'btn--outline'} ${className}`}
+      className={`btn btn--${color} btn--${size} ${border && 'btn--border'} ${outline && 'btn--outline'} ${className} ${iconButton && 'btn--icon'} ${className}`}
     >
       {children}
     </Link>
   ) : (
     <button
       {...props}
-      className={`btn btn--${color} btn--${size} ${border && 'btn--border'} ${outline && 'btn--outline'} ${className}`}
+      className={`btn btn--${color} btn--${size} ${border && 'btn--border'} ${outline && 'btn--outline'} ${iconButton && 'btn--icon'} ${className}`}
     >
       {children}
     </button>
