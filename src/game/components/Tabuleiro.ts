@@ -295,6 +295,9 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
   public removerTodasCartasDoSetor(indexSetor: number): Carta[] {
     const cartasSetor = [...this.cartasTabuleiro[indexSetor]];
     this.cartasTabuleiro[indexSetor] = [];
+    cartasSetor.forEach((carta) => {
+      this.remove(carta);
+    });
     return cartasSetor;
   }
 

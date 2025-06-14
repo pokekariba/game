@@ -165,7 +165,7 @@ export class Battle extends Scene {
         );
         await this.tabuleiro.jogarCarta(
           objCarta,
-          this.dadosPatida.valorLogadaAdversario,
+          this.dadosPatida.valorJogadaAdversario,
         );
       }
     }
@@ -191,6 +191,8 @@ export class Battle extends Scene {
             duration: 500,
             ease: 'Power2',
             onComplete: () => {
+              carta.setVisible(false);
+              this.children.remove(carta);
               carta.destroy();
               resolve();
             },
