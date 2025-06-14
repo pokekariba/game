@@ -68,5 +68,8 @@ export type ServerEvents = {
 };
 
 export type ClientEvents = {
-  [K in SocketClientEventsEnum]: (data: SocketClientEventsData[K]) => void;
+  [K in SocketClientEventsEnum]: (
+    data: SocketClientEventsData[K],
+    token: string,
+  ) => void;
 };

@@ -20,6 +20,8 @@ export class Battle extends Scene {
   private cartasRodada: Carta[] = [];
   private valorCartaRodada: number = 0;
   private suaVez?: boolean = undefined;
+  private boundFinalizarRodada: (event: Event) => void;
+  private boundTrocarTipoTabuleiro: (event: Event) => void;
 
   private dadosPatidaObservable: () => void;
 
@@ -33,23 +35,6 @@ export class Battle extends Scene {
     this.dadosPatida = useGameStore.getState().dadosPartida!;
     this.suaVez = this.dadosPatida.suaVez;
     this.emitirSuaVez();
-    this.dadosPatidaObservable = useGameStore.subscribe(async (gameState) => {
-      console.log('Observable: ', gameState);
-      if (gameState.dadosPartida) {
-        const dadosPartidaAntigos: DadosPartida = JSON.parse(
-          JSON.stringify(this.dadosPatida),
-        );
-        const novaRodada =
-          this.dadosPatida.rodada !== gameState.dadosPartida.rodada;
-        this.dadosPatida = gameState.dadosPartida;
-
-        if (novaRodada) {
-          await this.montarJogada(dadosPartidaAntigos);
-          this.suaVez = gameState.dadosPartida.suaVez;
-          this.emitirSuaVez();
-        }
-      }
-    });
   }
 
   public create() {
@@ -65,24 +50,43 @@ export class Battle extends Scene {
 
     this.tabuleiro = new Tabuleiro(this, TipoTabuleiro.TABULEIRO);
 
+    this.boundTrocarTipoTabuleiro = this.trocarTipoTabuleiro.bind(this);
     window.addEventListener(
       'trocar_tabuleiro',
       this.trocarTipoTabuleiro.bind(this),
     );
 
-    window.addEventListener(
-      'finalizar_rodada',
-      this.finalizarRodada.bind(this),
-    );
+    this.boundFinalizarRodada = this.finalizarRodada.bind(this);
+    window.addEventListener('finalizar_rodada', this.boundFinalizarRodada);
 
     this.maoUsuario = new MaoUsuario(this, this.dadosPatida.maoJogador);
 
     this.events.on('carta_clicada', this.aoClicarNaCarta.bind(this));
 
     this.events.on('carta_coringa_jogada', this.aoJogarCoringa.bind(this));
+
+    this.dadosPatidaObservable = useGameStore.subscribe(async (gameState) => {
+      console.log('Observable: ', gameState);
+      if (gameState.dadosPartida) {
+        const dadosPartidaAntigos: DadosPartida = JSON.parse(
+          JSON.stringify(this.dadosPatida),
+        );
+        const novaRodada =
+          this.dadosPatida.rodada !== gameState.dadosPartida.rodada;
+        this.dadosPatida = gameState.dadosPartida;
+
+        if (novaRodada) {
+          await this.montarJogada(dadosPartidaAntigos);
+          console.log('depois montarJogada');
+          this.suaVez = gameState.dadosPartida.suaVez;
+          this.emitirSuaVez();
+        }
+      }
+    });
   }
 
   public shutdown() {
+    console.log('shutdown() da cena Battle executado!');
     this.dadosPatidaObservable();
     if (this.tabuleiro) {
       this.tabuleiro.destroy();
@@ -92,12 +96,9 @@ export class Battle extends Scene {
     }
     window.removeEventListener(
       'trocar_tabuleiro',
-      this.trocarTipoTabuleiro.bind(this),
+      this.boundTrocarTipoTabuleiro,
     );
-    window.removeEventListener(
-      'finalizar_rodada',
-      this.finalizarRodada.bind(this),
-    );
+    window.removeEventListener('finalizar_rodada', this.boundFinalizarRodada);
     this.scale.off(Phaser.Scale.Events.RESIZE, this.redimencionarFundo, this);
   }
 
@@ -107,6 +108,7 @@ export class Battle extends Scene {
   }
 
   private finalizarRodada() {
+    console.log('finalizarRodada listener');
     const idCartas = this.cartasRodada[0]
       ? this.cartasRodada.map((carta) => carta.getDadosCarta().id)
       : [];
@@ -150,40 +152,53 @@ export class Battle extends Scene {
     const tabuleiroAtual = this.tabuleiro.getCartasTabuleiro();
     const tabuleiroCalculado = this.dadosPatida.tabuleiro;
     const maoJogador = this.maoUsuario.obterCartas();
+    const tamanhoCarta = maoJogador[0]
+      ? maoJogador[0]?.displayHeight
+      : this.scale.height / 2;
 
-    if (this.dadosPatida.jogadaAdversario) {
-      const tamanhoCarta = maoJogador[0]
-        ? maoJogador[0].displayHeight
-        : this.scale.height / 2;
-      for (const carta of this.dadosPatida.jogadaAdversario) {
-        const objCarta = new Carta(
-          this,
-          this.scale.width / 2,
-          -tamanhoCarta,
-          carta,
-          false,
-        );
-        await this.tabuleiro.jogarCarta(
-          objCarta,
-          this.dadosPatida.valorJogadaAdversario,
-        );
-      }
-    }
+    await new Promise<void>((resolve) => {
+      this.time.delayedCall(
+        50,
+        async () => {
+          if (
+            this.dadosPatida.jogadaAdversario &&
+            this.dadosPatida.jogadaAdversario.length > 0
+          ) {
+            for (const carta of this.dadosPatida.jogadaAdversario) {
+              const objCarta = new Carta(
+                this,
+                this.scale.width / 2,
+                -tamanhoCarta,
+                carta,
+                false,
+              );
+              await this.tabuleiro.jogarCarta(
+                objCarta,
+                this.dadosPatida.valorJogadaAdversario,
+              );
+            }
+          }
+          resolve();
+        },
+        [],
+        this,
+      );
+    });
 
     for (const [index, setor] of tabuleiroCalculado.entries()) {
       const setorAtual = tabuleiroAtual[index];
       if (!setorAtual.length || setor.length) continue;
       const cartasRemovidas = this.tabuleiro.removerTodasCartasDoSetor(index);
-      let yAnimacao = -cartasRemovidas[0].displayHeight;
+      let yAnimacao = -1080;
       if (
         dadosPartidaAntigos.cartasCapturadas[index] <
         this.dadosPatida.cartasCapturadas[index]
       ) {
         yAnimacao = this.scale.height + cartasRemovidas[0].displayHeight;
       }
-
       for (const carta of cartasRemovidas) {
         await new Promise<void>((resolve) => {
+          console.log(this, carta);
           this.tweens.add({
             targets: carta,
             y: yAnimacao,
@@ -191,20 +206,20 @@ export class Battle extends Scene {
             duration: 500,
             ease: 'Power2',
             onComplete: () => {
+              console.log('onComplete');
               carta.setVisible(false);
-              this.children.remove(carta);
-              carta.destroy();
               resolve();
             },
           });
         });
       }
     }
-
+    console.log('depois for cartasRemovidas');
     this.maoUsuario.atualizarCartas(this.dadosPatida.maoJogador);
   }
 
   private emitirSuaVez() {
+    console.log('emitirSuaVez');
     const event = new CustomEvent('sua_vez', {
       detail: this.suaVez,
     });

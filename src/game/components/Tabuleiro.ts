@@ -83,7 +83,7 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
     this.setPosition(boardX, boardY);
 
     this.calcularPosicoesSetoresBase();
-    this.atualizarLayoutTodosSetores(false);
+    this.atualizarLayoutTodosSetores();
   }
 
   private calcularPosicoesSetoresBase() {
@@ -146,66 +146,68 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
     comAnimacao: boolean = true,
   ): Promise<void> {
     const basePos = this.posicoesSetoresBase[setorIndex];
-    const cartasNoSetor = this.cartasTabuleiro[setorIndex];
+    const setor = this.cartasTabuleiro[setorIndex];
+    const index = setor.length - 1;
+    const carta = setor[setor.length - 1];
 
-    cartasNoSetor.forEach((carta, index) => {
-      const localOffsetX = this.OFFSET_PILHA_X * index;
-      const localOffsetY = this.OFFSET_PILHA_Y * index;
+    if (!carta) return Promise.resolve();
 
-      const rotatedOffsetX =
-        localOffsetX * Math.cos(basePos.rotation) -
-        localOffsetY * Math.sin(basePos.rotation);
-      const rotatedOffsetY =
-        localOffsetX * Math.sin(basePos.rotation) +
-        localOffsetY * Math.cos(basePos.rotation);
+    const localOffsetX = this.OFFSET_PILHA_X * index;
+    const localOffsetY = this.OFFSET_PILHA_Y * index;
 
-      const targetXLocal = basePos.x + rotatedOffsetX;
-      const targetYLocal = basePos.y + rotatedOffsetY;
+    const rotatedOffsetX =
+      localOffsetX * Math.cos(basePos.rotation) -
+      localOffsetY * Math.sin(basePos.rotation);
+    const rotatedOffsetY =
+      localOffsetX * Math.sin(basePos.rotation) +
+      localOffsetY * Math.cos(basePos.rotation);
 
-      const globalPoint = this.localToGlobal(targetXLocal, targetYLocal);
-      const targetXGlobal = globalPoint.x;
-      const targetYGlobal = globalPoint.y;
+    const targetXLocal = basePos.x + rotatedOffsetX;
+    const targetYLocal = basePos.y + rotatedOffsetY;
 
-      let targetRotation = basePos.rotation + Phaser.Math.DegToRad(-90);
+    const globalPoint = this.localToGlobal(targetXLocal, targetYLocal);
+    const targetXGlobal = globalPoint.x;
+    const targetYGlobal = globalPoint.y;
 
-      while (targetRotation > this.VOLTA_EM_RAD) {
-        targetRotation -= this.VOLTA_EM_RAD;
+    let targetRotation = basePos.rotation + Phaser.Math.DegToRad(-90);
+
+    while (targetRotation > this.VOLTA_EM_RAD) {
+      targetRotation -= this.VOLTA_EM_RAD;
+    }
+    console.log('targetRotation', targetRotation);
+
+    const targetDepth =
+      this.PROFUNDIDADE_TABULEIRO + index * this.PROFUNDIDADE_POR_CARTA;
+
+    return new Promise<void>((resolve) => {
+      if (comAnimacao) {
+        const tween = this.scene.tweens.add({
+          targets: carta,
+          x: targetXGlobal,
+          y: targetYGlobal,
+          rotation: targetRotation,
+          scaleX: this.ESCALA_CARTA,
+          scaleY: this.ESCALA_CARTA,
+          duration: 250,
+          ease: 'Power2',
+          onComplete: () => {
+            carta.setProfundidade(targetDepth);
+            tween.destroy();
+            resolve();
+          },
+        });
+      } else {
+        carta.setPosition(targetXGlobal, targetYGlobal);
+        carta.setRotation(targetRotation);
+        carta.setProfundidade(targetDepth);
+        resolve();
       }
-      console.log('targetRotation', targetRotation);
-
-      const targetDepth =
-        this.PROFUNDIDADE_TABULEIRO + index * this.PROFUNDIDADE_POR_CARTA;
-
-      return new Promise<void>((resolve) => {
-        if (comAnimacao) {
-          this.scene.tweens.add({
-            targets: carta,
-            x: targetXGlobal,
-            y: targetYGlobal,
-            rotation: targetRotation,
-            scaleX: this.ESCALA_CARTA,
-            scaleY: this.ESCALA_CARTA,
-            duration: 250,
-            ease: 'Power2',
-            onComplete: () => {
-              carta.setProfundidade(targetDepth);
-              this.scene.tweens.killAll();
-              resolve();
-            },
-          });
-        } else {
-          carta.setPosition(targetXGlobal, targetYGlobal);
-          carta.setRotation(targetRotation);
-          carta.setProfundidade(targetDepth);
-          resolve();
-        }
-      });
     });
   }
 
-  private atualizarLayoutTodosSetores(comAnimacao: boolean = false) {
+  private atualizarLayoutTodosSetores() {
     for (let i = 0; i < this.NUMERO_SETORES; i++) {
-      this.atualizarLayoutSetor(i, comAnimacao);
+      this.atualizarLayoutSetor(i, false);
     }
   }
 
@@ -286,7 +288,7 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
 
     if (indiceCarta > -1) {
       const cartaRemovida = setor.splice(indiceCarta, 1)[0];
-      await this.atualizarLayoutSetor(indexSetor);
+      await this.atualizarLayoutSetor(indexSetor, false);
       return cartaRemovida;
     }
     return null;

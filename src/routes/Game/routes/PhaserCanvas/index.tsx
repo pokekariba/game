@@ -10,6 +10,7 @@ import { TipoTabuleiro } from '../../../../@types/game/TipoTabuleiroEnum';
 import { emitirEvento } from '../../../../services/partida.service';
 import { SocketClientEventsEnum } from '../../../../@types/PartidaServiceTypes';
 import { useNavigate } from 'react-router-dom';
+import { Battle } from '../../../../game/scenes/Battle';
 
 const PhaserCanvas: React.FC = () => {
   const gameRef = React.useRef<Phaser.Game | null>(null);
@@ -39,6 +40,8 @@ const PhaserCanvas: React.FC = () => {
       gameRef.current = StartGame(containerRef.current);
     }
     return () => {
+      const scene = gameRef.current?.scene.getScene('Battle') as Battle;
+      scene?.shutdown?.();
       gameRef.current?.destroy(true);
       gameRef.current = null;
       window.removeEventListener('sua_vez', onSuaVez);

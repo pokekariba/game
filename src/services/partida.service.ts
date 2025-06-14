@@ -85,14 +85,18 @@ export const emitirEvento = async <Event extends keyof ClientEvents>(
   event: Event,
   responseEvent: SocketServerEventsEnum | null,
   loadingUntil: boolean,
-  ...data: Parameters<ClientEvents[Event]>
+  data: Parameters<ClientEvents[Event]>[0],
 ): Promise<void> => {
+  console.log('emitirEvento', data);
+
   if (!socket) throw new Error('Socket não conectado');
 
   if (loadingUntil) adicionarLoading();
 
+  const token = useAuthStore.getState().token || '';
+  const payload = [data, token] as Parameters<ClientEvents[Event]>;
   try {
-    socket.emit(event, ...data);
+    socket.emit(event, ...payload);
     if (responseEvent) {
       await esperarPelaResposta(responseEvent);
     }

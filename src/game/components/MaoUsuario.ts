@@ -23,7 +23,10 @@ export class MaoUsuario {
     this.cena = cena;
 
     this.calcularPosicoesMaoBase();
-    this.atualizarCartas(cartasIniciais);
+
+    this.cena.events.once(Phaser.Scenes.Events.CREATE, () => {
+      this.atualizarCartas(cartasIniciais);
+    });
 
     this.cena.scale.on(
       Phaser.Scale.Events.RESIZE,
@@ -125,6 +128,7 @@ export class MaoUsuario {
         const widthCarta = this.cartasNaMao[0]
           ? this.cartasNaMao[0].displayWidth
           : this.cena.scale.width / 2;
+
         return new Carta(
           this.cena,
           -widthCarta,

@@ -15,10 +15,10 @@ export class Carta extends Phaser.GameObjects.Container {
     cartaDoJogador: boolean,
   ) {
     super(scene, x, y);
-    this.cena = scene;
 
+    this.cena = scene;
     this.dadosCarta = dadosCarta;
-    scene.add.existing(this);
+    this.scene.add.existing(this);
 
     let nomeImagemCarta = '';
 
