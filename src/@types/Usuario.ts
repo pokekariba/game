@@ -1,5 +1,5 @@
 export interface Usuario {
-	email: string;
+  email: string;
   nome: string;
   moedas: number;
   dataCriacao: string;
@@ -8,4 +8,5 @@ export interface Usuario {
   avatarAtivo: number;
   fundoAtivo: number;
   baralhoAtivo: number;
+  avatarVariante: number;
 }

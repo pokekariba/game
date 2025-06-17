@@ -4,7 +4,6 @@ import Button from '../../../../components/Button';
 import { useLojaStore } from '../../../../store/useLojaStore';
 import { useGameStore } from '../../../../store/useGameStore';
 import { StoreService } from '../../../../services/store.service';
-import { TipoItemLoja } from '../../../../@types/Item';
 
 const AvatarStore: React.FC = () => {
   const avatares = useLojaStore((s) => s.avatar);
@@ -12,6 +11,7 @@ const AvatarStore: React.FC = () => {
 
   const [imagensAvatares, setImagensAvatares] = useState<string[][]>([]);
   const [avatarVisivel, setAvatarVisivel] = useState<number>(0);
+  const setUsuario = useGameStore((g) => g.setUsuario);
 
   useEffect(() => {
     if (avatares.length === 0) return;
@@ -24,67 +24,82 @@ const AvatarStore: React.FC = () => {
 
   const comprarItem = async (id: number) => {
     const res = await StoreService.comprarItemLoja(id);
-    if (usuario) useGameStore.getState().setUsuario({ ...usuario, moedas: res.saldoAtual });
+    if (res.saldoAtual) {
+      avatares[avatarVisivel].obtido = true;
+    }
+    if (usuario) setUsuario({ ...usuario, moedas: res.saldoAtual });
   };
 
-  const equiparItem = async (id: number) => {
-    const res = await StoreService.equiparItem(id, TipoItemLoja.avatar);
+  const equiparItem = async (id: number, variante: number) => {
+    const res = await StoreService.equiparItem(id, variante);
     if (usuario && res)
-      useGameStore.getState().setUsuario({ ...usuario, avatarAtivo: res.itemAtivo });
+      setUsuario({ ...usuario, avatarAtivo: id, avatarVariante: variante });
   };
 
   if (avatares.length === 0 || imagensAvatares.length === 0)
     return <div className="store__loading">Carregando avatares…</div>;
 
   return (
-  <div className="store__pokealgo d-flex mx-5 px-5">
-    <div className="store_scrollbar_avatar d-flex flex-column align-center gap-5">
-      {avatares.map((avatar, idx) => (
-        <div key={avatar.id} className="__store__avatar d-flex flex-column align-center">
-          <h1 className="store__text fs-5 text-white d-flex justify-center">{avatar.nome}</h1>
+    <div className="store__pokealgo d-flex mx-5">
+      <div className="store_scrollbar_avatar d-flex flex-column align-center gap-5">
+        {avatares.map((avatar, idx) => (
+          <div
+            key={avatar.id}
+            className="__store__avatar d-flex flex-column align-center"
+          >
+            <h1 className="store__text fs-5 text-white d-flex justify-center">
+              {avatar.nome}
+            </h1>
 
-          {avatar.obtido ? (
-            <Button
-              className={`mb-3 d-flex justify-center ${
-                usuario?.avatarAtivo === avatar.id ? 'store__button--active' : ''
-              }`}
-              onClick={() => equiparItem(avatar.id)}
+            {avatar.obtido ? (
+              <Button
+                className={`mb-3 d-flex justify-center ${
+                  usuario?.avatarAtivo === avatar.id
+                    ? 'store__button--active'
+                    : ''
+                }`}
+                disabled
+              >
+                já obtido
+              </Button>
+            ) : (
+              <Button
+                className="mb-3 d-flex justify-center"
+                onClick={() => comprarItem(avatar.id)}
+              >
+                {avatar.preco} moedas
+              </Button>
+            )}
+
+            <div
+              onClick={() => setAvatarVisivel(idx)}
+              className="store__card__thumb__avatar mb-5"
             >
-              {usuario?.avatarAtivo === avatar.id ? 'Selecionado' : 'Equipar'}
-            </Button>
-          ) : (
-            <Button className="mb-3 d-flex justify-center" onClick={() => comprarItem(avatar.id)}>
-              Comprar
-            </Button>
-          )}
-
-          <div onClick={() => setAvatarVisivel(idx)} className="store__card__thumb__avatar mb-5">
-            <img
-              src={imagensAvatares[idx]?.[0] ?? ''}
-              alt={avatar.nome}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-            />
+              <img
+                src={imagensAvatares[idx]?.[0] ?? ''}
+                alt={avatar.nome}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+              />
+            </div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
 
-    <div className="store__avatar-grid">
-      {(imagensAvatares[avatarVisivel] ?? []).map((imgUrl, idx) => (
-        <img
-          key={idx}
-          src={imgUrl}
-          alt={`${avatares[avatarVisivel]?.nome} avatar ${idx + 1}`}
-          className="store__card__avatar"
-          onClick={() => {
-          }}
-        />
-      ))}
+      <div className="store__avatar-grid">
+        {(imagensAvatares[avatarVisivel] ?? []).map((imgUrl, idx) => (
+          <img
+            key={idx}
+            src={imgUrl}
+            alt={`${avatares[avatarVisivel]?.nome} avatar ${idx + 1}`}
+            className="store__card__avatar"
+            onClick={() => equiparItem(avatares[avatarVisivel].id, idx)}
+          />
+        ))}
+      </div>
     </div>
-  </div>
-);
-}
+  );
+};
 
 export default AvatarStore;

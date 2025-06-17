@@ -1,9 +1,8 @@
 .store__pokealgo {
-  background-image: url('@/assets/img/pokealgo.png');
+  background-image: url('@/assets/img/pokealgo.svg');
   aspect-ratio: 876 / 677;
   background-repeat: no-repeat;
   background-size: cover;
-  margin-left: 20px;
   max-width: 876px;
   width: 100%;
   position: relative;
@@ -12,24 +11,21 @@
 .store_scrollbar_avatar {
   position: absolute;
   overflow-y: scroll;
-  margin-top: 40px;
-  max-height: 69vh;
-  margin-left: 475px;
-  width: 340px;
-  background: rgba(0, 0, 0, 0.2);
-
+  max-height: 100%;
+  right: 12%;
+  margin-top: 24px;
+  height: calc(100% - 24px);
   &::-webkit-scrollbar {
     width: 8px;
   }
 }
 
-
 .store__avatar-grid {
   display: grid;
-  grid-template-columns: repeat(3, 150px); 
-  grid-auto-rows: 150px;                   
+  grid-template-columns: repeat(3, 150px);
+  grid-auto-rows: 150px;
   gap: 10px;
-  margin-left: 20px;                       
+  margin-left: 20px;
 
   & > *:nth-child(7) {
     grid-column: 2 / 3;
