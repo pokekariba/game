@@ -5,6 +5,7 @@ import { MotivoFinal } from '../../../../@types/Resultado';
 
 const GameOver: React.FC = () => {
   const usuario = useGameStore((state) => state.usuario);
+  const setUsuario = useGameStore((state) => state.setUsuario);
   const resultado = useGameStore((state) => state.resultado);
   const skinPartida = useGameStore((state) => state.skinPartida);
   const adversario = useGameStore((state) => state.adversario);
@@ -13,9 +14,11 @@ const GameOver: React.FC = () => {
 
   React.useEffect(() => {
     if (resultado && usuario) {
+      usuario.partidasTotais++;
       let tituloMontado = '';
       switch (resultado.vencedor) {
         case usuario.nome:
+          usuario.partidasGanhas++;
           tituloMontado = 'Vitória';
           break;
         case 'Empate':
@@ -25,6 +28,7 @@ const GameOver: React.FC = () => {
           tituloMontado = 'Derrota';
           break;
       }
+      setUsuario({ ...usuario });
       if (resultado.motivo === MotivoFinal.DESISTENCIA) {
         tituloMontado += ' (Desistência)';
       }

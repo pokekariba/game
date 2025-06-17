@@ -307,6 +307,11 @@ export class Tabuleiro extends Phaser.GameObjects.Container {
     return this.cartasTabuleiro;
   }
 
+  public getCentro(): { x: number; y: number } {
+    const globalCenter = this.localToGlobal(0, 0);
+    return { x: globalCenter.x, y: globalCenter.y };
+  }
+
   public destroy() {
     this.scene.scale.off(
       Phaser.Scale.Events.RESIZE,

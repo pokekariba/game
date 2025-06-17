@@ -51,7 +51,7 @@ const Lobby: React.FC = () => {
     <div className="d-center flex-column container">
       <h1 className="game__page-title text-border">Batalha {partida?.nome}</h1>
       <h2 className="fs-3 text-white mb-5 text-border">
-        A batatalha vai começar em instantes!
+        A batalha vai começar em instantes!
       </h2>
       <Card className="game__lobby__container">
         <ul className="game__lobby">

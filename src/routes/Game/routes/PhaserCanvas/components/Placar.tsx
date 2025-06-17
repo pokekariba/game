@@ -10,7 +10,9 @@ const Placar: React.FC<PlacarProps> = ({
   inverter,
 }) => {
   return (
-    <ul className={`d-flex gap-3 flex-column ${inverter && 'ml-auto'}`}>
+    <ul
+      className={`d-flex gap-3 flex-column phaser-ui__placar__container ${inverter ? 'ml-auto flex-wrap-reverse' : 'flex-wrap'}`}
+    >
       {pontuacao.map((ponto, index) => (
         <li
           className={`phaser-ui__placar ${inverter ? 'flex-row-reverse' : 'flex-row'}`}

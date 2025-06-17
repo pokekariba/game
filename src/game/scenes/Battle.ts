@@ -20,6 +20,9 @@ export class Battle extends Scene {
   private cartasRodada: Carta[] = [];
   private valorCartaRodada: number = 0;
   private suaVez?: boolean = undefined;
+  private countdownText: Phaser.GameObjects.Text;
+  private turnTimer: Phaser.Time.TimerEvent;
+  private remainingTime: number;
   private boundFinalizarRodada: (event: Event) => void;
   private boundTrocarTipoTabuleiro: (event: Event) => void;
 
@@ -61,9 +64,15 @@ export class Battle extends Scene {
 
     this.maoUsuario = new MaoUsuario(this, this.dadosPatida.maoJogador);
 
+    if (this.suaVez) {
+      this.iniciarTemporizadorDeTurno();
+    }
+
     this.events.on('carta_clicada', this.aoClicarNaCarta.bind(this));
 
     this.events.on('carta_coringa_jogada', this.aoJogarCoringa.bind(this));
+
+    this.events.on('tempo_esgotado', this.jogarPrimeiraCarta.bind(this));
 
     this.dadosPatidaObservable = useGameStore.subscribe(async (gameState) => {
       console.log('Observable: ', gameState);
@@ -79,6 +88,9 @@ export class Battle extends Scene {
           await this.montarJogada(dadosPartidaAntigos);
           console.log('depois montarJogada');
           this.suaVez = gameState.dadosPartida.suaVez;
+          if (this.suaVez) {
+            this.iniciarTemporizadorDeTurno();
+          }
           this.emitirSuaVez();
         }
       }
@@ -107,8 +119,61 @@ export class Battle extends Scene {
     this.tabuleiro.trocarImagem(novoTipoTabuleiro);
   }
 
+  private iniciarTemporizadorDeTurno() {
+    if (this.turnTimer) this.turnTimer.destroy();
+    if (this.countdownText) this.countdownText.destroy();
+
+    this.remainingTime = 15;
+
+    const centroDoTabuleiro = this.tabuleiro.getCentro();
+
+    this.countdownText = this.add
+      .text(centroDoTabuleiro.x, centroDoTabuleiro.y, `${this.remainingTime}`, {
+        fontSize: '48px',
+        fontFamily: '"Jersey 10"',
+        color: '#ffffff',
+        stroke: '#000000',
+        strokeThickness: 8,
+      })
+      .setOrigin(0.5)
+      .setDepth(100);
+
+    this.turnTimer = this.time.addEvent({
+      delay: 1000,
+      callback: this.atualizarContador,
+      callbackScope: this,
+      repeat: this.remainingTime - 1,
+    });
+  }
+
+  private atualizarContador() {
+    this.remainingTime--;
+    this.countdownText.setText(`${this.remainingTime}`);
+    if (this.remainingTime <= 0) {
+      this.events.emit('tempo_esgotado');
+    }
+  }
+
+  private async jogarPrimeiraCarta() {
+    const primeiraCarta = this.maoUsuario.obterCartas()[0];
+
+    if (primeiraCarta && !this.cartasRodada.length) {
+      await this.aoClicarNaCarta(
+        primeiraCarta,
+        primeiraCarta.getDadosCarta().valor || 1,
+      );
+    }
+    this.finalizarRodada();
+  }
+
   private finalizarRodada() {
     console.log('finalizarRodada listener');
+    if (this.turnTimer) {
+      this.turnTimer.destroy();
+    }
+    if (this.countdownText) {
+      this.countdownText.destroy();
+    }
     const idCartas = this.cartasRodada[0]
       ? this.cartasRodada.map((carta) => carta.getDadosCarta().id)
       : [];
@@ -131,13 +196,13 @@ export class Battle extends Scene {
     }
   }
 
-  private async aoClicarNaCarta(carta: Carta) {
+  private async aoClicarNaCarta(carta: Carta, camaleao?: number) {
     const dados = carta.getDadosCarta();
     if (!this.suaVez) return;
     if (this.cartasRodada.length) {
       if (dados.valor !== this.valorCartaRodada && dados.valor) return;
     } else {
-      this.valorCartaRodada = dados.valor;
+      this.valorCartaRodada = camaleao || dados.valor;
     }
     this.cartasRodada.push(carta);
     if (this.maoUsuario.obterCartas().includes(carta)) {

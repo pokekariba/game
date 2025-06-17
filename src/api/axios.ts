@@ -48,7 +48,7 @@ api.interceptors.response.use(
   },
   (error) => {
     useLoadingStore.getState().decrement();
-    abrirModal(error?.message);
+    abrirModal(error.response.data.mensagem || error.message);
     return Promise.reject(error);
   },
 );

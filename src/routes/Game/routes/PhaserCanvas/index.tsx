@@ -84,7 +84,7 @@ const PhaserCanvas: React.FC = () => {
     usuario &&
     skinPartida &&
     adversario && (
-      <>
+      <div className="phaser-ui__background">
         <div className="phaser-ui phaser-ui__left">
           <div className="d-flex align-center">
             <Button iconButton onClick={() => setMenu(true)}>
@@ -140,7 +140,7 @@ const PhaserCanvas: React.FC = () => {
             </Button>
           </div>
         </Modal>
-      </>
+      </div>
     )
   );
 };

@@ -9,6 +9,7 @@ import env from '../config/env';
 import { useGameStore } from '../store/useGameStore';
 import { useLoadingStore } from '../store/useLoading';
 import { useModal } from '../store/useModal';
+import { authService } from './auth.service';
 
 let socket: Socket<ServerEvents, ClientEvents> | null = null;
 
@@ -39,7 +40,8 @@ export const conectarSocket = () => {
     modalsState.setModal(true);
     const modalObserver = useModal.subscribe((modal) => {
       if (!modal.modal) {
-        window.location.href = '/pokariba';
+        authService.logout();
+        window.location.href = '/login';
         modalObserver();
       }
     });

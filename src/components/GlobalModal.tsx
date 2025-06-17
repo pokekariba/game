@@ -7,7 +7,7 @@ export const GlobalModal: React.FC = () => {
 
   return (
     <Modal isOpen={modal.modal} onClose={() => modal.setModal(false)}>
-      {modal.content}
+      <div className="mt-3">{modal.content}</div>
     </Modal>
   );
 };

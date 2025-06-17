@@ -196,7 +196,7 @@ export class MaoUsuario {
     }
   }
 
-  destroy() {
+  public destroy() {
     this.cena.scale.off(Phaser.Scale.Events.RESIZE);
 
     this.cena.events.off('carta_hover_in_mao', this.aoPassarMouseNaCarta, this);

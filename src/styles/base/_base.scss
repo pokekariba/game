@@ -3,7 +3,7 @@
 @use '../config/variables' as var;
 
 * {
-  box-sizing: border-box;
+  box-sizing: border-box !important;
 }
 
 body {
@@ -21,11 +21,10 @@ body {
 
 .container {
   width: 100%;
-  min-height: 100vh;
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
-  height: 100vh;
+  height: 100%;
 }
 
 .d-center {
@@ -218,6 +217,9 @@ a {
 }
 .flex-wrap {
   flex-wrap: wrap !important;
+}
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse !important;
 }
 .flex-nowrap {
   flex-wrap: nowrap !important;
