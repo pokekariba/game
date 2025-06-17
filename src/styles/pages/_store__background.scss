@@ -1,15 +1,16 @@
 .store__pokesnap__buttons{
-  transform: translate(60px , -642px);
+  margin-top: 12%;
 }
 
 .store__pokesnap__button{
-  width: 120px;
-  height: 45px;
+  width: 110px;
+  height: 30px;
   font-size: 1rem;
+  margin-right: 15px;
 }
 
 .store__pokesnap__button--buy {
-  background-color: #FFD700; /* amarelo */
+  background-color: #FFD700;
   border: 2px solid #B8860B;
   color: black;
 }
@@ -39,12 +40,23 @@
   color: white;
 }
 
-.store__pokesnap__container {
-  position: absolute;
+.store__background-wrapper{
+  margin: 40px;
+  background-image: url(@/assets/img/Pokesnap.svg);
+  aspect-ratio: 875 / 732;
+  background-repeat: no-repeat;
+  background-size: cover;
+  max-width: 875px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.store__pokesnap__container{
+  width: auto;
+  height: auto;
   top: 0;
-  left: 50%;
-  transform: translate(-400px , 50px);
-  z-index: -20;
 }
 
 .store__carrossel__item__active__wrapper {
@@ -52,23 +64,30 @@
   justify-content: center;
 }
 
-.store__carrossel__item__active > img {
-  width: 650px;
+.store__carrossel__item__active__wrapper img{
+  margin-top: 40px;
+  width: 600px;
   height: auto;
-  border: 5px solid white;
-  transform: translate(187px , 200px);
+  border: 2px solid white;
+}
+
+.store__carrossel__item-title{
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .store__carrossel__scroll {
   display: flex;
   overflow-x: auto;
   gap: 20px;
-  padding: 1rem 2rem;
+  padding: 0 2rem;
   width: 700px;
-  margin-top: 30px;
+  margin-top: 5px;
   justify-content: flex-start;
   scroll-behavior: smooth;
-  transform: translate(188px , 150px);
 }
 
 .store__carrossel__scroll::-webkit-scrollbar {
@@ -107,14 +126,16 @@
 .store__pokesnap__button--not-equipped {
   background-color: red;
   color: white;
+  opacity: 50%;
+  cursor: not-allowed;
 }
 
 .store__pokesnap__button--obtained {
-  background-color: #4CAF50; /* verde */
+  background-color: #4CAF50; 
   color: white;
 }
 
 .store__pokesnap__button--buy {
-  background-color: #FFD700; /* amarelo ouro */
+  background-color: #FFD700; 
   color: black;
 }

@@ -1,72 +1,128 @@
 import React from 'react';
 import Button from '../../components/Button';
 import logo from '../../assets/img/logo-pokariba.png';
-import { useLocation, useNavigate } from 'react-router-dom';
-import mock1 from "../../assets/img/Inicial/pikachu.png";
-import mock2 from "../../assets/img/Inicial/charmander.png";
-import mock3 from "../../assets/img/Inicial/bulbasauro.png";
-import header from "../../assets/img/headerdecks.svg";
+import { Outlet, useLocation } from 'react-router-dom';
+import { StoreService } from '../../services/store.service';
+import { useLojaStore } from '../../store/useLojaStore';
 
 const Store: React.FC = () => {
   const location = useLocation();
-  const [pagAberta,setPagAberta] = React.useState("");
-  React.useEffect(() =>{
+  const [pagAberta, setPagAberta] = React.useState('');
+  const [mostrarModal, setMostrarModal] = React.useState(false);
+  const [quantidade, setQuantidade] = React.useState(100);
+  const [formaPagamento, setFormaPagamento] = React.useState('credito');
+  const cartas = useLojaStore((s) => s.cartas);
+
+  React.useEffect(() => {
     const path = location.pathname.split('/')[3];
     setPagAberta(path);
-  }, [location])
+    if (!cartas.length){
+      StoreService.listaItensLoja();  
+    }
+  }, [location]);
 
   return (
-  <div className='d-flex flex-row'>
-    <div className="d-flex flex-column gap-4 store__btn__container">
-      <img className='logo' src={logo} alt="Logo" />
+    <div className="d-flex flex-row">
+      {/* Menu lateral */}
+      <div className="d-flex flex-column align-center gap-4 px-3 py-4 my-5">
+        <img className="store__logo" src={logo} alt="Logo" />
+        <h1 className="fs-5 text-white mx-auto">Loja</h1>
 
-      <h1 className='fs-5 text-white mx-auto'>Loja</h1>
-
-      <Button 
-      border={false} color={pagAberta==="deck"?"primary":"white"} 
-      href='deck'>
+        <Button
+          className="store__paddingx"
+          border={false}
+          color={pagAberta === 'deck' ? 'primary' : 'white'}
+          href="deck"
+        >
           Decks
         </Button>
 
-        <Button 
-         border={false} color={pagAberta==="background"?"primary":"white"} 
-         href='background'>
+        <Button
+          className="store__paddingx"
+          border={false}
+          color={pagAberta === 'background' ? 'primary' : 'white'}
+          href="background"
+        >
           Fundo
         </Button>
 
-        <Button 
-        border={false} color={pagAberta==="avatar"?"primary":"white"} 
-        href='avatar'>
+        <Button
+          className="store__paddingx"
+          border={false}
+          color={pagAberta === 'avatar' ? 'primary' : 'white'}
+          href="avatar"
+        >
           Avatar
         </Button>
 
-        <Button 
-        border={false} color='gold' onClick={() => {}}>
+        <Button
+          className="px-5"
+          border={false}
+          color="gold"
+          onClick={() => setMostrarModal(true)}
+        >
           Comprar Moedas
         </Button>
-    </div>
-    {/* menu */}
-    
-    <img src={header} alt='header'/>
-    <div className='d-flex align-center flex-column'>
-      <h1 className='fs-5 text-white'
-      >Inicial</h1>
-      
-      <Button>
-        Selecionado
-      </Button>
-      
-      <div className='store__card__thumb'>
-        <img src={mock3} alt='cartas-deck'/> 
-        <img src={mock2} alt='cartas-deck'/> 
-        <img src={mock1} alt='cartas-deck'/> 
       </div>
-      
+      <Outlet />
+      {mostrarModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h2 className="fs-5 mx-auto">Comprar Moedas</h2>
+
+            <div className="coin-options">
+              {[100, 200, 300, 400, 500].map((qtd) => (
+                <Button
+                  key={qtd}
+                  className="store__paddingx px-5"
+                  border={false}
+                  color={quantidade === qtd ? 'gold' : 'white'}
+                  onClick={() => setQuantidade(qtd)}
+                >
+                  {qtd}
+                </Button>
+              ))}
+            </div>
+
+            <h2 className="fs-5 mx-auto">Formas de pagamento</h2>
+
+            <div className="payment-methods">
+              {[
+                { value: 'credito', label: 'Cartão de crédito' },
+                { value: 'debito', label: 'Cartão de débito' },
+                { value: 'pix', label: 'PIX' },
+                { value: 'boleto', label: 'Boleto' },
+              ].map((forma) => (
+                <Button
+                  key={forma.value}
+                  className="store__paddingx"
+                  color={formaPagamento === forma.value ? 'gold' : 'white'}
+                  onClick={() => setFormaPagamento(forma.value)}
+                >
+                  {forma.label}
+                </Button>
+              ))}
+            </div>
+
+            <div className="modal-actions">
+              <Button
+                className="store__paddingx primary"
+                onClick={() => {
+                  alert(`Compra de ${quantidade} moedas por ${formaPagamento} efetuada!`);
+                  setMostrarModal(false);
+                }}
+              >
+                Finalizar Compra
+              </Button>
+
+              <Button className="store__paddingx" onClick={() => setMostrarModal(false)}>
+                Cancelar Compra
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-    {/* pokedex */}
-
-  </div>
-
   );
 };
 

@@ -1,101 +1,88 @@
 import React, { useEffect, useState } from 'react';
-import header from "../../../../assets/img/headerdecks.svg";
+import header from '../../../../assets/img/headerdecks.svg';
 import Button from '../../../../components/Button';
 import { useLojaStore } from '../../../../store/useLojaStore';
-import { DisponibilidadeItem, TipoItemLoja, ItemLoja } from '../../../../@types/Item';
 import { StoreService } from '../../../../services/store.service';
+import { TipoItemLoja } from '../../../../@types/Item';
+import { useGameStore } from '../../../../store/useGameStore';
 
 const DeckStore: React.FC = () => {
-  const cartas = useLojaStore((state) => state.cartas);
-  const updateItem = useLojaStore((state) => state.updateItem);
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const cartas = useLojaStore((s) => s.cartas);
+  const usuario = useGameStore((g) => g.usuario);
+  const [imagensCartas, setImagensCartas] = useState<string[][]>();
+  const [cartaVisivel, setCartaVisivel] = useState<number>(0);
 
- 
   useEffect(() => {
-    async function carregarDecks() {
-      try {
-        await StoreService.listaItensLoja();
-      } catch (error) {
-        console.error("Erro ao carregar decks:", error);
-      }
+    if (cartas.length === 0 && imagensCartas) return;
+    const buscarImagensItens = async () => {
+      const imagensCartas = await StoreService.listarImagemItens(cartas);
+      setImagensCartas(imagensCartas);
     }
-    carregarDecks();
-  }, []);
-
-
-  const cartasDecks = cartas.filter(item => item.tipo === TipoItemLoja.deck);
-
+    buscarImagensItens();
+  }, [cartas]);
   
-  const decks: ItemLoja[][] = [];
-  for (let i = 0; i < cartasDecks.length; i += 3) {
-    decks.push(cartasDecks.slice(i, i + 3));
-  }
-
-  const handleSelect = (index: number) => {
-    const grupo = decks[index];
-    if (grupo.every(carta => carta.obtido)) {
-      setSelectedIndex(index);
-    }
-  };
-
-  const handleBuy = (index: number) => {
-    const grupo = decks[index];
-    grupo.forEach((item) => {
-      if (!item.obtido && item.disponibilidade === DisponibilidadeItem.disponivel) {
-        updateItem({ ...item, obtido: true });
+  const comprarItem = async (id: number) => {
+      const response = await StoreService.comprarItemLoja(id);
+      if (usuario){
+        useGameStore((g) => g.setUsuario)({...usuario, moedas: response.saldoAtual})
       }
-    });
   };
 
-  if (cartas.length === 0) {
-    return <div className="text-white mx-auto">Carregando decks...</div>;
+  const selecionarItem = async (id: number) =>{
+    const response = await StoreService.equiparItem(id, TipoItemLoja.deck);
+      if (usuario && response){
+        useGameStore((g) => g.setUsuario)({...usuario, baralhoAtivo: response.itemAtivo})
+      };
   }
 
-  return (
-    <div className='d-flex mx-5 px-5'>
-      <img src={header} alt='header' className='store__header' />
 
-      <div className='store_scrollbar d-flex flex-column align-center gap-5'>
-        <div className='store_scroll_container d-flex flex-column justify-center'>
-          {decks.map((grupo, index) => {
-            const obtido = grupo.every(carta => carta.obtido);
-            return (
-              <div className='__store__card d-flex flex-column align-center' key={index}>
-                <h1 className='store__text fs-5 text-white d-flex justify-center'>Deck {index + 1}</h1>
+  return imagensCartas && (
+    <div className="d-flex mx-5 px-5">
+      <img src={header} alt="header" className="store__header" />
 
-                {obtido ? (
-                  <Button
-                    className={`mb-5 d-flex justify-center store__button ${
-                      selectedIndex === index ? 'store__button--active' : ''
-                    }`}
-                    onClick={() => handleSelect(index)}
-                  >
-                    {selectedIndex === index ? 'Selecionado' : 'Selecionar'}
-                  </Button>
-                ) : (
-                  <Button
-                    className="mb-5 d-flex justify-center store__button store__button--buy"
-                    onClick={() => handleBuy(index)}
-                  >
-                    Comprar
-                  </Button>
-                )}
+      <div className="store_scrollbar d-flex flex-column align-center gap-5">
+        <div className="store_scroll_container d-flex flex-column justify-center">
+          {cartas.map((carta, idx) => (
+            <div className="__store__card d-flex flex-column align-center" key={idx}>
+              <h1 className="store__text fs-5 text-white d-flex justify-center">{carta.nome}</h1>
 
-                <div className='store__card__thumb mb-5'>
-                  {grupo.map((item, i) => (
-                    <img key={i} src={item.nome} alt={`Carta ${item.id}`} />
-                  ))}
-                </div>
+              {carta.obtido?(
+                <Button
+                  className={`mb-5 d-flex justify-center store__button ${
+                    usuario?.baralhoAtivo === carta.id ? 'store__button--active' : ''
+                  }`}
+                  onClick={() => selecionarItem(carta.id)}
+                >
+                  {usuario?.baralhoAtivo === carta.id ?  'Selecionado' : 'Selecionar'}
+                </Button>
+              ) : (
+                <Button
+                  className="mb-5 d-flex justify-center store__button store__button--buy"
+                  onClick={() => comprarItem(carta.id)}
+                >
+                  Comprar
+                </Button>
+              )}
+
+              <div onClick={() => setCartaVisivel(idx)} className="store__card__thumb mb-5">
+                {imagensCartas[idx].slice(0, 3).map((url, i) => (
+                  <img loading="eager" fetchPriority="high" decoding="async" key={i} src={url} alt={`Carta thumb ${i + 1}`} />
+                ))}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       </div>
 
       <div className="store__deck-grid gap-2">
-        {selectedIndex !== null &&
-          decks[selectedIndex].map((item, index) => (
-            <img key={index} src={item.nome} alt={`Carta ${item.id}`} className="store__card" />
+        { 
+          imagensCartas[cartaVisivel].map((item, i) => (
+            <img
+              key={i}
+              src={item}
+              alt={`imagem carta de valor ${i}`}
+              className="store__card"
+            />
           ))}
       </div>
     </div>

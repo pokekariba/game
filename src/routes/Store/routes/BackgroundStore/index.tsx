@@ -1,148 +1,111 @@
 import React, { useEffect, useState } from 'react';
 import Button from '../../../../components/Button';
-import pokesnap from '../../../../assets/img/Pokesnap.svg';
-import { ItemLoja } from '../../../../@types/Item';
-import { StoreService } from '../../../../services/store.service';
 import { useLojaStore } from '../../../../store/useLojaStore';
+import { StoreService } from '../../../../services/store.service';
+import { TipoItemLoja } from '../../../../@types/Item';
+import { useGameStore } from '../../../../store/useGameStore';
+
 
 const BackgroundStore: React.FC = () => {
-  const fundos = useLojaStore((state) => state.fundo); // ✔️ Pegando apenas fundos
-  const [backgrounds, setBackgrounds] = useState<ItemLoja[]>([]);
-  const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [equippedMenu, setEquippedMenu] = useState<number | null>(null);
-  const [equippedBattle, setEquippedBattle] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-
-  const activeBackground: ItemLoja | undefined = backgrounds[activeIndex];
+  const fundos = useLojaStore((s) => s.fundo);
+  const usuario = useGameStore((g) => g.usuario);
+  const [imagensFundos, setImagensFundos] = useState<string[][]>([]); 
+  const [fundoVisivel, setFundoVisivel] = useState<number>(0);
 
   useEffect(() => {
-    const carregarBackgrounds = async () => {
-      await StoreService.listaItensLoja();
-      setLoading(false);
+    if(fundos.length === 0 && imagensFundos) return;
+    const buscarImagensFundos = async () => {
+      const imagensFundos = await StoreService.listarImagemItens(fundos);
+      setImagensFundos(imagensFundos);
+    }
+    buscarImagensFundos();
+  }, [fundos]);
+  const comprarItem = async (id: number) => {
+        const response = await StoreService.comprarItemLoja(id);
+        if (usuario){
+          useGameStore((g) => g.setUsuario)({...usuario, moedas: response.saldoAtual})
+        }
+    };
+  
+    const selecionarItem = async (id: number) => {
+      const response = await StoreService.equiparItem(id, TipoItemLoja.deck);
+      if (usuario && response) {
+        useGameStore((g) => g.setUsuario)({ ...usuario, baralhoAtivo: response.itemAtivo });
+      }
     };
 
-    carregarBackgrounds();
-  }, []);
-
-  useEffect(() => {
-    if (!Array.isArray(fundos) || fundos.length === 0) return;
-    setBackgrounds(fundos);
-  }, [fundos]);
-
-  const handleBuy = async () => {
-    if (!activeBackground || activeBackground.obtido) return;
-
-    try {
-      const response = await StoreService.comprarItemLoja(activeBackground.id);
-      if (response?.sucesso) {
-        setBackgrounds((prev) =>
-          prev.map((bg) =>
-            bg.id === activeBackground.id ? { ...bg, obtido: true } : bg
-          )
-        );
-      }
-    } catch (error) {
-      console.error('Erro ao comprar background:', error);
+  const equiparFundo = async (id: number) => {
+    const response = await StoreService.equiparItem(id, TipoItemLoja.fundo);
+    if (usuario && response) {
+      useGameStore((g) => g.setUsuario)({ ...usuario, fundoAtivo: response.itemAtivo });
     }
   };
 
-  const handleEquip = async (tipo: 'menu' | 'batalha') => {
-    if (!activeBackground?.obtido) return;
+  return fundos.length && imagensFundos.length && (
+     <div className="store__background-wrapper">
+          <div className="store__pokesnap__buttons d-flex gap-1 justify-center flex-wrap mx-5">
+            {!fundos[fundoVisivel].obtido ? (
+              <Button
+                className="store__pokesnap__button store__pokesnap__button--buy d-flex align-center justify-center"
+                onClick={() => comprarItem(fundos[fundoVisivel].id)}
+              >
+                Comprar
+              </Button>
+            ) : (
+              <Button
+                className="store__pokesnap__button store__pokesnap__button--obtained d-flex align-center justify-center"
+                disabled
+              >
+                Já obtido
+              </Button>
+            )}
 
-    try {
-      const response = await StoreService.equiparBackground({
-        id: activeBackground.id,
-        tipo,
-      });
-
-      if (response?.sucesso) {
-        if (tipo === 'menu') setEquippedMenu(activeBackground.id);
-        else setEquippedBattle(activeBackground.id);
-      }
-    } catch (error) {
-      console.error('Erro ao equipar background:', error);
-    }
-  };
-
-  if (loading) {
-    return <div className="store__loading">Carregando...</div>;
-  }
-
-  if (!backgrounds.length) {
-    return <div className="store__empty">Nenhum background disponível.</div>;
-  }
-
-  return (
-    <div className="store__background-wrapper">
-      <div className="store__pokesnap__container">
-        <img src={pokesnap} alt="header" className="store__pokesnap" />
-
-        <div className="store__pokesnap__buttons d-flex gap-1 justify-center flex-wrap">
-          {!activeBackground.obtido ? (
+            
             <Button
-              className="store__pokesnap__button store__pokesnap__button--buy d-flex align-center justify-center"
-              onClick={handleBuy}
+              className={`store__pokesnap__button equipped d-flex align-center justify-center ${
+                usuario?.fundoAtivo === fundos[fundoVisivel].id
+                  ? 'store__pokesnap__button--equipped'
+                  : 'store__pokesnap__button--not-equipped'
+              }`}
+              onClick={() => equiparFundo(fundos[fundoVisivel].id)}
+              disabled={!fundos[fundoVisivel].obtido}
             >
-              Comprar ({activeBackground.preco} moedas)
+              Equipar 
             </Button>
-          ) : (
-            <Button
-              className="store__pokesnap__button store__pokesnap__button--obtained d-flex align-center justify-center"
-              disabled
-            >
-              Já obtido
-            </Button>
-          )}
-
-          <Button
-            className={`store__pokesnap__button d-flex align-center justify-center mx-3 ${
-              equippedMenu === activeBackground.id
-                ? 'store__pokesnap__button--equipped'
-                : 'store__pokesnap__button--not-equipped'
-            }`}
-            onClick={() => handleEquip('menu')}
-            disabled={!activeBackground.obtido}
-          >
-            Equipar Menu
-          </Button>
-
-          <Button
-            className={`store__pokesnap__button d-flex align-center justify-center ${
-              equippedBattle === activeBackground.id
-                ? 'store__pokesnap__button--equipped'
-                : 'store__pokesnap__button--not-equipped'
-            }`}
-            onClick={() => handleEquip('batalha')}
-            disabled={!activeBackground.obtido}
-          >
-            Equipar Batalha
-          </Button>
-        </div>
-      </div>
-
-      <div className="store__carrossel__item__active__wrapper">
-        <div className="store__carrossel__item__active">
-          <img
-            src={activeBackground.imagem || activeBackground.nome}
-            alt={`Background ${activeBackground.id}`}
-          />
-        </div>
-      </div>
-
-      <div className="store__carrossel__scroll">
-        {backgrounds.map((bg, index) => (
-          <div
-            key={bg.id}
-            className={`store__carrossel__item store__carrossel__item--clickable ${
-              index === activeIndex ? 'store__carrossel__item--active' : ''
-            }`}
-            onClick={() => setActiveIndex(index)}
-          >
-            <img src={bg.imagem || bg.nome} alt={`Background ${bg.id}`} />
           </div>
-        ))}
+
+
+
+        <div className="store__carrossel__item__active__wrapper">
+          <div className="store__carrossel__item__active">
+            <img
+              src={imagensFundos[fundoVisivel][0]}
+              alt={fundos[fundoVisivel].nome}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          </div>
+        </div>
+
+
+        <div className="store__carrossel__scroll">
+          {fundos.map((f, idx) => (
+            <div
+              key={f.id}
+              className={`store__carrossel__item store__carrossel__item--clickable ${
+                idx === fundoVisivel ? 'store__carrossel__item--active' : ''
+              }`}
+              onClick={() => setFundoVisivel(idx)}
+            >
+              <h2 className="store__carrossel__item-title text-center mb-1">
+                {f.nome}
+              </h2>
+              <img src={imagensFundos[idx][0]} alt={f.nome} />
+            </div>
+          ))}
+        </div>
       </div>
-    </div>
   );
 };
 

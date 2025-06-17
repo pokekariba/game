@@ -1,113 +1,90 @@
-import React, { useState, useEffect } from 'react';
-import pokealgo from '../../../../assets/img/pokealgo.svg';
-import { StoreService } from '../../../../services/store.service';
-import { useLojaStore } from '../../../../store/useLojaStore';
-import { ItemLoja, TipoItemLoja } from '../../../../@types/Item';
+import React, { useEffect, useState } from 'react';
 
-type AvatarGroupKey = 'ash' | 'misty' | 'brock' | 'gary';
+import Button from '../../../../components/Button';
+import { useLojaStore } from '../../../../store/useLojaStore';
+import { useGameStore } from '../../../../store/useGameStore';
+import { StoreService } from '../../../../services/store.service';
+import { TipoItemLoja } from '../../../../@types/Item';
 
 const AvatarStore: React.FC = () => {
-  const [avatarGroups, setAvatarGroups] = useState<Record<AvatarGroupKey, ItemLoja[]>>({
-    ash: [],
-    misty: [],
-    brock: [],
-    gary: [],
-  });
+  const avatares = useLojaStore((s) => s.avatar);
+  const usuario = useGameStore((g) => g.usuario);
 
-  const [activeGroup, setActiveGroup] = useState<AvatarGroupKey>('ash');
-  const [selectedAvatar, setSelectedAvatar] = useState<number | null>(null);
-
-  const { avatar } = useLojaStore();
+  const [imagensAvatares, setImagensAvatares] = useState<string[][]>([]);
+  const [avatarVisivel, setAvatarVisivel] = useState<number>(0);
 
   useEffect(() => {
-    async function loadAvatars() {
-      await StoreService.listaItensLoja(); // carrega os dados na store
+    if (avatares.length === 0) return;
 
-      // separa os avatares por prefixo do nome (ex: 'ash_01')
-      const grupos: Record<AvatarGroupKey, ItemLoja[]> = {
-        ash: [],
-        misty: [],
-        brock: [],
-        gary: [],
-      };
+    (async () => {
+      const imgs = await StoreService.listarImagemItens(avatares); // [[url]]
+      setImagensAvatares(imgs);
+    })();
+  }, [avatares]);
 
-      avatar
-        .filter((item) => item.tipo === TipoItemLoja.avatar)
-        .forEach((item) => {
-          const key = Object.keys(grupos).find((k) => item.nome.toLowerCase().startsWith(k));
-          if (key) {
-            grupos[key as AvatarGroupKey].push(item);
-          }
-        });
-
-      setAvatarGroups(grupos);
-    }
-
-    loadAvatars();
-  }, [avatar]);
-
-  const handleSelect = (index: number) => {
-    setSelectedAvatar(index);
+  const comprarItem = async (id: number) => {
+    const res = await StoreService.comprarItemLoja(id);
+    if (usuario) useGameStore.getState().setUsuario({ ...usuario, moedas: res.saldoAtual });
   };
 
-  const groupNames = Object.keys(avatarGroups) as AvatarGroupKey[];
-  const currentAvatars = avatarGroups[activeGroup] || [];
+  const equiparItem = async (id: number) => {
+    const res = await StoreService.equiparItem(id, TipoItemLoja.avatar);
+    if (usuario && res)
+      useGameStore.getState().setUsuario({ ...usuario, avatarAtivo: res.itemAtivo });
+  };
+
+  if (avatares.length === 0 || imagensAvatares.length === 0)
+    return <div className="store__loading">Carregando avatares…</div>;
 
   return (
-    <div className="d-flex flex-row gap-4 align-start justify-center store__avatar-layout">
-      <img className="store__pokealgo" src={pokealgo} alt="Pokealgo logo" />
-      <div className="d-flex flex-column align-center store__avatar-grid">
-        <div className="store__grid-6">
-          {currentAvatars.slice(0, 6).map((avatar, index) => (
-            <div key={index} className="store__grid-avatar-wrapper">
-              <div
-                className={`store__grid-avatar${selectedAvatar === index ? ' store__grid-avatar--selected' : ''}`}
-                onClick={() => handleSelect(index)}
-              >
-                <img src={avatar.nome} alt={`Avatar ${index + 1}`} />
-              </div>
-            </div>
-          ))}
-        </div>
+  <div className="store__pokealgo d-flex mx-5 px-5">
+    <div className="store_scrollbar_avatar d-flex flex-column align-center gap-5">
+      {avatares.map((avatar, idx) => (
+        <div key={avatar.id} className="__store__avatar d-flex flex-column align-center">
+          <h1 className="store__text fs-5 text-white d-flex justify-center">{avatar.nome}</h1>
 
-        {currentAvatars[6] && (
-          <div className="store__grid-avatar-wrapper">
-            <div
-              className={`store__grid-avatar store__grid-item--bottom${selectedAvatar === 6 ? ' store__grid-avatar--selected' : ''}`}
-              onClick={() => handleSelect(6)}
+          {avatar.obtido ? (
+            <Button
+              className={`mb-3 d-flex justify-center ${
+                usuario?.avatarAtivo === avatar.id ? 'store__button--active' : ''
+              }`}
+              onClick={() => equiparItem(avatar.id)}
             >
-              <img src={currentAvatars[6].nome} alt="Avatar 7" />
-            </div>
-            <label className="store__checkbox-label">
-              <input
-                type="checkbox"
-                checked={selectedAvatar === 6}
-                onChange={() => handleSelect(6)}
-                title="Selecionar Avatar 7"
-              />
-            </label>
-          </div>
-        )}
-      </div>
+              {usuario?.avatarAtivo === avatar.id ? 'Selecionado' : 'Equipar'}
+            </Button>
+          ) : (
+            <Button className="mb-3 d-flex justify-center" onClick={() => comprarItem(avatar.id)}>
+              Comprar
+            </Button>
+          )}
 
-      <div className="d-flex justify-center flex-column store__avatar-groups ">
-        {groupNames.map((group, index) => (
-          <div
-            key={index}
-            className={`d-flex align-center justify-center gap-2 store__avatar-group-rect${
-              activeGroup === group ? ' store__avatar-group-rect--active' : ''
-            }`}
-            onClick={() => setActiveGroup(group)}
-          >
-            <span className="fs-3 store__avatar-group-label">{group}</span>
-            {avatarGroups[group][0] && (
-              <img src={avatarGroups[group][0].nome} alt={`${group} thumbnail`} className="store__avatar-group-img" />
-            )}
+          <div onClick={() => setAvatarVisivel(idx)} className="store__card__thumb__avatar mb-5">
+            <img
+              src={imagensAvatares[idx]?.[0] ?? ''}
+              alt={avatar.nome}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
     </div>
-  );
-};
+
+    <div className="store__avatar-grid">
+      {(imagensAvatares[avatarVisivel] ?? []).map((imgUrl, idx) => (
+        <img
+          key={idx}
+          src={imgUrl}
+          alt={`${avatares[avatarVisivel]?.nome} avatar ${idx + 1}`}
+          className="store__card__avatar"
+          onClick={() => {
+          }}
+        />
+      ))}
+    </div>
+  </div>
+);
+}
 
 export default AvatarStore;

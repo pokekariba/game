@@ -29,6 +29,7 @@
 .store__card__thumb {
     width: 160px;
     height: 220px;
+    cursor: pointer;
     position: relative;
     @for $i from 1 through 3 {
     :nth-child(#{$i}) {
@@ -41,8 +42,8 @@
 
 .store__button {
   margin-top: 50px;
-  background-color: #FFD700; /* cor amarela/destaque */
-  border: 3px solid #B8860B; /* borda dourada escura */
+  background-color: #FFD700;
+  border: 3px solid #B8860B;
   color: black;
   padding: 0.3rem 3rem;
   text-align: center;

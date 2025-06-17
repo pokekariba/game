@@ -1,225 +1,89 @@
 .store__pokealgo {
-  position: absolute;
-  z-index: -2;
-  transform: translate(-55px, 0);
+  background-image: url('@/assets/img/pokealgo.png');
+  aspect-ratio: 876 / 677;
+  background-repeat: no-repeat;
+  background-size: cover;
+  margin-left: 20px;
+  max-width: 876px;
+  width: 100%;
+  position: relative;
 }
 
-/* Layout geral */
-.store__avatar-layout {
-  display: flex;
-  gap: 40px;
-  transform: translate(150px, 24px);
+.store_scrollbar_avatar {
+  position: absolute;
+  overflow-y: scroll;
+  margin-top: 40px;
+  max-height: 69vh;
+  margin-left: 475px;
+  width: 340px;
+  background: rgba(0, 0, 0, 0.2);
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
 }
+
 
 .store__avatar-grid {
-  transform: translate(-55px, 110px);
-}
-
-.store__grid-6 {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 15px;
+  grid-template-columns: repeat(3, 150px); 
+  grid-auto-rows: 150px;                   
+  gap: 10px;
+  margin-left: 20px;                       
+
+  & > *:nth-child(7) {
+    grid-column: 2 / 3;
+    justify-self: center;
+  }
 }
 
-.store__grid-avatar-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.store__grid-avatar {
-  width: 120px;
-  height: 120px;
-  background-color: #720220;
-  border: 3px solid #490114;
+.store__card__avatar {
+  margin-top: 90px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  padding: 5px;
+  border: 4px solid white;
+  background-color: hsla(0, 0%, 0%, 0.3);
+  overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.store__grid-avatar img {
-  width: 100%;
-  height: 100%;
+  transition: border-color 0.3s ease;
   object-fit: cover;
-  border-radius: 50%;
+  display: block;
+
+  &:hover {
+    border-color: gray;
+  }
+
+  &--selected {
+    border-color: gold;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+  }
 }
 
-.store__grid-avatar--selected {
-  border: 3px solid #FFD700;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.8);
-}
-
-.store__grid-item--bottom {
-  margin-top: 10px;
-}
-
-.store__checkbox-label {
-  display: none;
-}
-
-/* Grupos de avatar (coluna da direita) */
-.store__avatar-groups {
-  max-height: 635px;
-  overflow-y: auto;
-  width: 331px;
-  border-top: 3px solid #490114;
-  transform: translate(-25px, 40px);
-  z-index: -2;
-}
-
-.store__avatar-group-rect {
-  padding: 8px;
-  cursor: pointer;
-  height: 200px;
-  gap: 12px;
-  transition: background-color 0.2s ease;
-  border-bottom: 3px solid gold;
-}
-
-.store__avatar-group-rect:hover {
-  background-color: #a00830;
-}
-
-.store__avatar-group-rect--active {
-  background-color: #FFD700;
-  color: black;
-}
-
-.store__avatar-group-img {
+.store__card__thumb__avatar {
   width: 150px;
-  height: auto;
-  border-radius: 8px;
-  object-fit: cover;
-}
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid transparent;
+  transition: border-color 0.3s ease;
 
-.store__avatar-group-label {
-  color: white;
-  font-weight: bold;
-  text-transform: capitalize;
-  font-size: 1rem;
-}
-
-.store__avatar-groups::-webkit-scrollbar {
-  width: 8px;
-}
-
-.store__avatar-groups::-webkit-scrollbar-track {
-  background: #333;
-  border-radius: 4px;
-}
-
-.store__avatar-groups::-webkit-scrollbar-thumb {
-  background-color: #fff;
-  border-radius: 4px;
-  border: 2px solid #333;
-}
-
-/* Responsividade */
-@media (max-width: 1024px) {
-  .store__avatar-layout {
-    transform: translate(80px, 20px);
+  &:hover {
+    border-color: gray;
   }
 
-  .store__avatar-grid {
-    transform: translate(-30px, 80px);
-  }
-
-  .store__avatar-groups {
-    width: 280px;
-    max-height: 500px;
-    transform: translate(-15px, 30px);
-  }
-
-  .store__avatar-group-img {
-    width: 120px;
-  }
-
-  .store__grid-avatar {
-    width: 100px;
-    height: 100px;
-  }
-}
-
-@media (max-width: 768px) {
-  .store__avatar-layout {
-    flex-direction: column;
-    transform: translate(0, 0);
-    align-items: center;
-  }
-
-  .store__avatar-grid {
-    transform: translate(0, 20px);
+  img {
     width: 100%;
-    max-width: 360px;
-  }
-
-  .store__grid-6 {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .store__avatar-groups {
-    width: 100%;
-    max-height: 300px;
-    transform: translate(0, 20px);
-    border-top: none;
-    border-bottom: 3px solid #490114;
-  }
-
-  .store__avatar-group-rect {
-    height: 140px;
-    padding: 6px;
-  }
-
-  .store__avatar-group-img {
-    width: 100px;
-  }
-
-  .store__grid-avatar {
-    width: 80px;
-    height: 80px;
-  }
-
-  .store__grid-item--bottom {
-    margin-top: 5px;
-  }
-}
-
-@media (max-width: 480px) {
-  .store__avatar-layout {
-    transform: translate(0, 0);
-  }
-
-  .store__avatar-grid {
-    max-width: 280px;
-  }
-
-  .store__grid-6 {
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .store__avatar-groups {
-    max-height: 200px;
-    width: 100%;
-    transform: translate(0, 10px);
-  }
-
-  .store__avatar-group-rect {
-    height: 100px;
-    padding: 4px;
-  }
-
-  .store__avatar-group-img {
-    width: 80px;
-  }
-
-  .store__grid-avatar {
-    width: 60px;
-    height: 60px;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
 }

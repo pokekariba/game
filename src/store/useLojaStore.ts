@@ -18,7 +18,6 @@ export const useLojaStore = create<LojaState>((set) => ({
 
   updateItem: (itemAtualizado) => {
     set((state) => {
-      // Atualiza o item na lista correta, seja cartas, fundo ou avatar
       const atualizarLista = (lista: ItemLoja[]) =>
         lista.map(item => item.id === itemAtualizado.id ? itemAtualizado : item);
 
