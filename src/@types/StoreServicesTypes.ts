@@ -5,3 +5,7 @@ export interface ListaItensLojaResponse{
     fundo: ItemLoja[],
     avatar: ItemLoja[],
 }
+
+export interface visualizarItemResponse {
+    urlsItem: string[]
+}
