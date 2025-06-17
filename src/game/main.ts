@@ -1,31 +1,34 @@
-import { Boot } from './scenes/Boot';
-import { Login } from './scenes/Login';
+import { Battle } from './scenes/Battle';
 import { AUTO, Game } from 'phaser';
 import { Preloader } from './scenes/Preloader';
-
-
+import RexWebFontLoaderPlugin from 'phaser3-rex-plugins/plugins/webfontloader-plugin.js';
 
 const config: Phaser.Types.Core.GameConfig = {
-    type: AUTO,
-    width: 1920,
-    height: 1080,
-    scale: {
-        mode: Phaser.Scale.HEIGHT_CONTROLS_WIDTH,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
+  type: AUTO,
+  width: window.innerWidth,
+  height: window.innerHeight,
+  transparent: true,
+  disableContextMenu: true,
+  fps: { target: 60 },
+  dom: { createContainer: true },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+  },
+  plugins: {
+    global: [
+      {
+        key: 'rexWebFontLoader',
+        plugin: RexWebFontLoaderPlugin,
+        start: true,
       },
-    parent: 'game-container',
-    backgroundColor: '#028af8',
-    scene: [
-        Boot,
-        Preloader,
-        Login
-    ]
+    ],
+  },
+  scene: [Preloader, Battle],
 };
 
-const StartGame = (parent: string) => {
-
-    return new Game({ ...config, parent });
-
-}
+const StartGame = (parent: HTMLElement) => {
+  return new Game({ ...config, parent });
+};
 
 export default StartGame;

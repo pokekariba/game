@@ -1,35 +1,105 @@
-import {create} from 'zustand';
+import { create } from 'zustand';
 import { Usuario } from '../@types/Usuario';
+import { Partida, PartidaSelecionada } from '../@types/Partida';
+import DadosPartida from '../@types/DadosPartida';
+import Resultado from '../@types/Resultado';
+import { SkinPatida } from '../@types/SkinPartida';
+import Jogador from '../@types/Jogadores';
+import {
+  SocketServerEventsData,
+  SocketServerEventsEnum,
+} from '../@types/PartidaServiceTypes';
 
-interface GameState {
+export interface GameState {
   usuario?: Usuario;
-  isGameOver: boolean;
+  listaPartidas?: Partida[];
+  dadosPartida?: DadosPartida;
+  skinPartida?: SkinPatida;
+  partidaSelecionada?: PartidaSelecionada;
+  resultado?: Resultado;
+  adversario?: Jogador;
+  setAdversario: (jogador?: Jogador) => void;
   setUsuario: (usuario?: Usuario) => void;
-  setGameOver: (isGameOver: boolean) => void;
+  setListaPartidas: (listaPartidas?: Partida[]) => void;
+  setDadosPartida: (dadosPartida?: DadosPartida) => void;
+  selecionarPartida: (
+    partida?: SocketServerEventsData[SocketServerEventsEnum.SALA_ATUALIZADA],
+  ) => void;
+  setResultado: (resultado?: Resultado) => void;
+  setSkinPartida: (skinPartida?: SkinPatida) => void;
+  zerarPartida: () => void;
 }
 
 export const useGameStore = create<GameState>((set) => ({
   usuario: undefined,
-  isGameOver: false,
+  listaPartidas: undefined,
+  dadosPartida: undefined,
+  partidaSelecionada: undefined,
+  skinPartida: {
+    avatarAdversario: '/assets/ash.png',
+    avatarUsuario: '/assets/ash.png',
+    fundo: '/assets/bg.png',
+    cartasAdversario: [
+      '/assets/mock-cartas/ditto.webp',
+      '/assets/mock-cartas/magnemite.webp',
+      '/assets/mock-cartas/machop.webp',
+      '/assets/mock-cartas/abra.webp',
+      '/assets/mock-cartas/koffin.webp',
+      '/assets/mock-cartas/bulbasauro.webp',
+      '/assets/mock-cartas/charmander.webp',
+      '/assets/mock-cartas/squirtle.webp',
+      '/assets/mock-cartas/pikachu.webp',
+    ],
+    cartasUsuario: [
+      '/assets/mock-cartas/ditto.webp',
+      '/assets/mock-cartas/magnemite.webp',
+      '/assets/mock-cartas/machop.webp',
+      '/assets/mock-cartas/abra.webp',
+      '/assets/mock-cartas/koffin.webp',
+      '/assets/mock-cartas/bulbasauro.webp',
+      '/assets/mock-cartas/charmander.webp',
+      '/assets/mock-cartas/squirtle.webp',
+      '/assets/mock-cartas/pikachu.webp',
+    ],
+  },
+  resultado: undefined,
+  adversario: undefined,
+  setAdversario: (adversario) => set({ adversario }),
   setUsuario: (usuario) => {
     set({ usuario });
-    if (usuario) {
-      sessionStorage.setItem('usuario', JSON.stringify(usuario));
-    } else {
-      sessionStorage.removeItem('usuario');
-    }
+    usuario
+      ? sessionStorage.setItem('usuario', JSON.stringify(usuario))
+      : sessionStorage.removeItem('usuario');
   },
-  setGameOver: (isGameOver) => {
-    set({ isGameOver });
-    sessionStorage.setItem('isGameOver', JSON.stringify(isGameOver));
-  },
+  setListaPartidas: (listaPartidas) => set({ listaPartidas }),
+  setDadosPartida: (dadosPartida) => set({ dadosPartida }),
+  selecionarPartida: (partida) =>
+    set({
+      partidaSelecionada: partida
+        ? {
+            ...partida,
+            donoPartida:
+              partida.donoPartida === useGameStore.getState().usuario?.nome,
+          }
+        : undefined,
+    }),
+  setResultado: (resultado) => set({ resultado }),
+  setSkinPartida: (skinPartida) => set({ skinPartida }),
+  zerarPartida: () =>
+    set({
+      resultado: undefined,
+      //skinPartida: undefined,
+      dadosPartida: undefined,
+      partidaSelecionada: undefined,
+      adversario: undefined,
+      listaPartidas: undefined,
+    }),
 }));
 
 const usuarioStr = sessionStorage.getItem('usuario');
-const isGameOverStr = sessionStorage.getItem('isGameOver');
-if (usuarioStr || isGameOverStr) {
+
+if (usuarioStr) {
   useGameStore.setState({
     usuario: usuarioStr ? JSON.parse(usuarioStr) : undefined,
-    isGameOver: isGameOverStr ? JSON.parse(isGameOverStr) : false,
   });
 }

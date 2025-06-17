@@ -1,0 +1,25 @@
+@use '../config/variables' as var;
+.game-over {
+  &__result {
+    width: 80%;
+    max-width: 600px;
+    font-size: 48px;
+    text-align: center;
+    margin-bottom: 64px;
+    &--Vitória {
+      color: var.$sucess;
+    }
+    &--Empate {
+      color: var.$blue;
+    }
+    &--Derrota {
+      color: var.$error;
+    }
+  }
+  &__nome {
+    width: 200px;
+  }
+  &__score {
+    font-size: 24px;
+  }
+}
