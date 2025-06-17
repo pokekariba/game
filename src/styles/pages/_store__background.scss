@@ -1,0 +1,141 @@
+.store__pokesnap__buttons{
+  margin-top: 12%;
+}
+
+.store__pokesnap__button{
+  width: 110px;
+  height: 30px;
+  font-size: 1rem;
+  margin-right: 15px;
+}
+
+.store__pokesnap__button--buy {
+  background-color: #FFD700;
+  border: 2px solid #B8860B;
+  color: black;
+}
+
+.store__pokesnap__button--buy:hover {
+  background-color: #FFEA00;
+  border-color: #DAA520;
+}
+
+.store__pokesnap__button--obtained {
+  background-color: #4CAF50;
+  border: 2px solid #357a38;
+  color: white;
+  cursor: default;
+  pointer-events: none;
+}
+
+.store__pokesnap__button--equipped {
+  background-color: #4CAF50;
+  border: 2px solid #357a38;
+  color: white;
+}
+
+.store__pokesnap__button--not-equipped {
+  background-color: #490114;
+  border: 2px solid #7f1d1d;
+  color: white;
+}
+
+.store__background-wrapper{
+  margin: 40px;
+  background-image: url(@/assets/img/Pokesnap.svg);
+  aspect-ratio: 875 / 732;
+  background-repeat: no-repeat;
+  background-size: cover;
+  max-width: 875px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.store__pokesnap__container{
+  width: auto;
+  height: auto;
+  top: 0;
+}
+
+.store__carrossel__item__active__wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.store__carrossel__item__active__wrapper img{
+  margin-top: 40px;
+  width: 600px;
+  height: auto;
+  border: 2px solid white;
+}
+
+.store__carrossel__item-title{
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.store__carrossel__scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 0 2rem;
+  width: 700px;
+  margin-top: 5px;
+  justify-content: flex-start;
+  scroll-behavior: smooth;
+}
+
+.store__carrossel__scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.store__carrossel__scroll::-webkit-scrollbar-track {
+  background: #720220;
+  border-radius: 4px;
+}
+
+.store__carrossel__scroll::-webkit-scrollbar-thumb {
+  background-color: #fff;
+  border-radius: 4px;
+  border: 2px solid #720220;
+}
+
+.store__carrossel__item > img {
+  width: 150px;
+  height: auto;
+  border: 2px solid white;
+  transition: transform 0.3s ease, border 0.3s ease;
+}
+
+.store__carrossel__item--active > img {
+  border: 3px solid #FFD700;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+  transform: scale(1.05);
+}
+
+.store__pokesnap__button--equipped {
+  background-color: green;
+  color: white;
+}
+
+.store__pokesnap__button--not-equipped {
+  background-color: red;
+  color: white;
+  opacity: 50%;
+  cursor: not-allowed;
+}
+
+.store__pokesnap__button--obtained {
+  background-color: #4CAF50; 
+  color: white;
+}
+
+.store__pokesnap__button--buy {
+  background-color: #FFD700; 
+  color: black;
+}
